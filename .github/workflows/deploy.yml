@@ -15,9 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject Gemini API key
+      - name: Inject Gemini API key and version
         run: |
           sed -i "s|%%GEMINI_KEY%%|${{ secrets.GEMINI_API_KEY }}|g" index.html
+          VERSION=$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)
+          sed -i "s|%%VERSION%%|$VERSION|g" index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
