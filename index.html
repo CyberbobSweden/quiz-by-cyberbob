@@ -34,7 +34,20 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes revealUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--radius);padding:36px 40px;box-shadow:var(--shadow)}
 .card+.card{margin-top:14px}
-@media(max-width:520px){.card{padding:24px 18px}}
+@media(max-width:520px){
+  .card{padding:20px 16px}
+  header{padding:10px 14px}
+  .logo-mark{width:34px;height:34px;font-size:1rem}
+  .logo-main{font-size:.82rem}
+  .logo-sub{font-size:.6rem}
+  #hdr-reset{padding:6px 10px;font-size:.72rem}
+  h1{font-size:1.6rem}
+  .diff-grid{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .diff-btn{padding:8px 4px;font-size:.72rem}
+  .diff-btn .diff-icon{font-size:1.1rem}
+  .btn-lg{padding:13px 20px;font-size:.88rem}
+  .preset{padding:6px 10px;font-size:.75rem}
+}
 h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;line-height:1.1}
 h2{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:700}
 h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
@@ -105,7 +118,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .timer-num{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted)}
 .timer-answered{font-size:.78rem;color:var(--muted)}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.options{grid-template-columns:1fr}}
+@media(max-width:480px){.options{grid-template-columns:1fr}}
 .opt{display:flex;align-items:center;gap:12px;background:var(--surf2);border:1.5px solid var(--border);border-radius:var(--rad-sm);padding:16px 18px;font-size:.97rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:border-color .18s,background .18s,transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
 .opt:hover:not(:disabled):not(.correct):not(.wrong){border-color:var(--blue-bright);background:rgba(26,130,255,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .opt:disabled{cursor:default}
