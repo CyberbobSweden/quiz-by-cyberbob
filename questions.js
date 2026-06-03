@@ -684,4 +684,36 @@ const QUESTION_DB = {
     {q:"Vad heter bron över Umeälven i centrala Umeå?",o:["Tegsbron","Storbron","Umeå bron","Gammliabron"],a:1,d:3},
     {q:"Vilket år öppnade Umeå flygplats?",o:["1935","1944","1952","1960"],a:1,d:3},
     {q:"Vilket år grundades Umeå IF fotboll?",o:["1917","1927","1937","1947"],a:0,d:3},
-    {q:"Vad heter Umeås äldsta kyrka?",o:["Umeå landsförsamlings kyrka","Umeå stadsförsamlings kyrka","Gammlia kyrka","Mariebergskyrkan"]
+    {q:"Vad heter Umeås äldsta kyrka?",o:["Umeå landsförsamlings kyrka","Umeå stadsförsamlings kyrka","Gammlia kyrka","Mariebergskyrkan"],a:0,d:3},
+    {q:"Vilket år grundades Umeå som stad?",o:["1588","1621","1650","1700"],a:1,d:3},
+    {q:"Vad heter kullen i centrala Umeå?",o:["Röbäckskullen","Umedalen","Backenkullen","Tomtebo"],a:0,d:3},
+    {q:"Vilket år startade Umeå Open tennis?",o:["1980","1985","1990","1995"],a:2,d:3},
+  ],
+};
+
+function getQuestions(category, difficulty, count) {
+  const allCats = category === 'mix' ? Object.keys(QUESTION_DB) : [category];
+  function buildPool(maxDiff) {
+    let pool = [];
+    allCats.forEach(cat => {
+      const qs = QUESTION_DB[cat] || [];
+      pool = pool.concat(qs.filter(q => q.d <= maxDiff));
+    });
+    return pool;
+  }
+  let pool = buildPool(difficulty);
+  if (pool.length < count && difficulty < 3) pool = buildPool(difficulty + 1);
+  if (pool.length < count) pool = buildPool(3);
+  if (pool.length === 0) return [];
+  const arr = pool.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor((crypto.getRandomValues(new Uint32Array(1))[0] / 0xFFFFFFFF) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, count).map(q => ({
+    question: q.q,
+    options: q.o,
+    correct: q.a,
+    category: allCats.length > 1 ? '🌈 Mix' : category
+  }));
+}
