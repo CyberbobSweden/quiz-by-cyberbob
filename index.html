@@ -26,6 +26,8 @@ header{display:flex;align-items:center;gap:16px;padding:14px 28px;background:rgb
 .hdr-pill.live{border-color:rgba(39,217,143,.3);color:var(--correct)}
 .hdr-pill.live::before{content:'● ';animation:blink 1.2s step-end infinite}
 @keyframes blink{50%{opacity:0}}
+/* ADMIN RESET BUTTON – always visible in header when admin */
+#hdr-reset{display:none}
 main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px 48px;gap:16px}
 .screen{display:none;width:100%;max-width:820px}
 .screen.active{display:block;animation:revealUp .35s cubic-bezier(.22,1,.36,1)}
@@ -67,14 +69,13 @@ textarea{min-height:80px;resize:vertical}
 .badge-admin{background:rgba(247,206,69,.2);border:1px solid rgba(247,206,69,.5);color:var(--gold)}
 hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}.tc{text-align:center}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mb8{margin-bottom:8px}.mb16{margin-bottom:16px}.tc{text-align:center}
 .entry-grid{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
 .entry-chip{display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-weight:700;font-size:.86rem}
 .entry-chip.me{border-color:rgba(26,130,255,.5);background:rgba(26,130,255,.1)}
 .entry-chip.team{border-color:rgba(247,206,69,.4);background:rgba(247,206,69,.07)}
 .chip-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;font-family:'Syne',sans-serif;flex-shrink:0}
 .chip-sub{font-size:.7rem;color:var(--muted);font-weight:600}
-/* DIFFICULTY SELECTOR */
 .diff-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:8px 0}
 .diff-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:var(--rad-sm);background:var(--surf2);border:1.5px solid var(--border);cursor:pointer;transition:border-color .18s,background .18s;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;color:var(--text)}
 .diff-btn .diff-icon{font-size:1.4rem}
@@ -112,7 +113,6 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .opt.wrong{background:rgba(240,91,91,.14)!important;border-color:var(--wrong)!important}
 .opt-key{min-width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;flex-shrink:0}
 .opt.correct .opt-key{background:rgba(39,217,143,.3)}.opt.wrong .opt-key{background:rgba(240,91,91,.3)}
-/* TEAM LOCKED */
 .team-locked{display:none;margin-top:18px;padding:16px 18px;border-radius:var(--rad-sm);background:rgba(26,130,255,.1);border:1px solid rgba(26,130,255,.3);font-weight:700;font-size:.92rem;color:#7EC5FF;text-align:center;animation:slideIn .3s ease}
 .result-alert{display:none;margin-top:18px;padding:13px 18px;border-radius:var(--rad-sm);font-weight:700;font-size:.9rem;animation:slideIn .3s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
@@ -130,7 +130,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .preset{padding:7px 15px;border-radius:999px;background:var(--surf2);border:1.5px solid var(--border);font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:border-color .18s,background .18s}
 .preset:hover{border-color:var(--blue-bright);background:rgba(26,130,255,.1)}
 .preset.active{border-color:var(--gold);background:rgba(247,206,69,.1);color:var(--gold)}
-.info-box{background:rgba(26,130,255,.08);border:1px solid rgba(26,130,255,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:#7EC5FF;line-height:1.5}
+.info-box{background:rgba(26,130,168,.08);border:1px solid rgba(26,130,255,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:#7EC5FF;line-height:1.5}
 .warn-box{background:rgba(247,206,69,.07);border:1px solid rgba(247,206,69,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:var(--gold);line-height:1.5}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:200}
 .conf-piece{position:absolute;top:-12px;border-radius:2px;animation:confDrop linear forwards}
@@ -151,6 +151,8 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
       </div>
     </a>
     <div class="hdr-right">
+      <!-- Admin reset alltid synlig i headern -->
+      <button class="btn btn-danger btn-sm" id="hdr-reset" onclick="adminHardReset()">↺ Reset</button>
       <div class="hdr-pill" id="hdr-pill">Lobby</div>
     </div>
   </header>
@@ -186,6 +188,18 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
       </div>
     </div>
 
+    <!-- WAIT (quiz pågår, ny spelare kom in) -->
+    <div class="screen" id="screen-wait">
+      <div class="card tc">
+        <div style="font-size:3rem">⏳</div>
+        <h2 class="mt8">Quiz pågår just nu</h2>
+        <p class="mt8">Vänta tills admin startar en ny omgång – du är med nästa gång!</p>
+        <div id="wait-admin" style="display:none;margin-top:24px">
+          <button class="btn btn-gold btn-lg" onclick="adminHardReset()">↺ Avbryt &amp; gå till lobby</button>
+        </div>
+      </div>
+    </div>
+
     <!-- LOBBY -->
     <div class="screen" id="screen-lobby">
       <div class="card">
@@ -208,18 +222,15 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
             <label>Svårighetsgrad</label>
             <div class="diff-grid">
               <div class="diff-btn d1 active" id="diff1" onclick="setDiff(1)">
-                <span class="diff-icon">😊</span>
-                <span>Lätt</span>
+                <span class="diff-icon">😊</span><span>Lätt</span>
                 <span style="font-size:.7rem;opacity:.7">Nybörjare</span>
               </div>
               <div class="diff-btn d2" id="diff2" onclick="setDiff(2)">
-                <span class="diff-icon">🤔</span>
-                <span>Medel</span>
+                <span class="diff-icon">🤔</span><span>Medel</span>
                 <span style="font-size:.7rem;opacity:.7">Lagom knepigt</span>
               </div>
               <div class="diff-btn d3" id="diff3" onclick="setDiff(3)">
-                <span class="diff-icon">🔥</span>
-                <span>Svårt</span>
+                <span class="diff-icon">🔥</span><span>Svårt</span>
                 <span style="font-size:.7rem;opacity:.7">Expertläge</span>
               </div>
             </div>
@@ -233,8 +244,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
             </div>
           </div>
           <div class="row mt8">
-            <button class="btn btn-gold btn-lg" id="btn-generate" onclick="adminGenerate()">✨ Generera &amp; starta quiz</button>
-            <button class="btn btn-danger btn-sm" onclick="adminReset()">↺ Nollställ</button>
+            <button class="btn btn-gold btn-lg" onclick="adminGenerate()">✨ Generera &amp; starta quiz</button>
           </div>
           <p class="mt8" style="font-size:.78rem;color:var(--muted)">AI genererar helt unika frågor varje gång – tar ca 10 sek.</p>
         </div>
@@ -276,7 +286,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div class="q-cat" id="q-cat">🎵 Musik</div>
         <div class="q-text" id="q-text">…</div>
         <div class="options" id="options"></div>
-        <div class="team-locked" id="team-locked">🔒 Ditt lag har redan svarat på denna fråga!</div>
+        <div class="team-locked" id="team-locked">🔒 Ditt lag har redan svarat!</div>
         <div class="result-alert" id="result-alert"></div>
       </div>
       <div class="card">
@@ -319,7 +329,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <hr>
         <div class="row" style="justify-content:center">
           <div id="final-admin-btn" style="display:none">
-            <button class="btn btn-gold btn-lg" onclick="adminNewGame()">🎉 Starta ny quiz</button>
+            <button class="btn btn-gold btn-lg" onclick="adminHardReset()">🎉 Starta ny quiz</button>
           </div>
           <div id="final-player-msg" style="display:none">
             <p class="dim" style="font-size:.85rem">⏳ Väntar på att admin startar en ny quiz…</p>
@@ -331,54 +341,53 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
   </main>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
 const firebaseConfig = {
-  apiKey:            "AIzaSyAprn2R9_5kefeMG_6MMfzyhB71LbcibPo",
-  authDomain:        "quiz-by-cyberbob.firebaseapp.com",
-  databaseURL:       "https://quiz-by-cyberbob-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId:         "quiz-by-cyberbob",
-  storageBucket:     "quiz-by-cyberbob.firebasestorage.app",
-  messagingSenderId: "388399400611",
-  appId:             "1:388399400611:web:14a0f828e37eab5f11e116"
+  apiKey:"AIzaSyAprn2R9_5kefeMG_6MMfzyhB71LbcibPo",
+  authDomain:"quiz-by-cyberbob.firebaseapp.com",
+  databaseURL:"https://quiz-by-cyberbob-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"quiz-by-cyberbob",
+  storageBucket:"quiz-by-cyberbob.firebasestorage.app",
+  messagingSenderId:"388399400611",
+  appId:"1:388399400611:web:14a0f828e37eab5f11e116"
 };
-
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app, "https://quiz-by-cyberbob-default-rtdb.europe-west1.firebasedatabase.app");
-window._db=db; window._ref=ref; window._set=set; window._get=get;
-window._onValue=onValue; window._update=update;
-window._dbReady=true;
-window._firebaseLoaded && window._firebaseLoaded();
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app,"https://quiz-by-cyberbob-default-rtdb.europe-west1.firebasedatabase.app");
+window._db=db;window._ref=ref;window._set=set;window._get=get;
+window._onValue=onValue;window._update=update;
+window._dbReady=true;window._firebaseLoaded&&window._firebaseLoaded();
 </script>
 
 <script>
 const ADMIN_CODE='combitech2024';
 const TIMER_SECS=15;
 const GAME_KEY='combitech-quiz-game';
-
+const DIFF_LABELS={
+  1:'lätt – nybörjarvänliga frågor, välkända fakta som de flesta känner till',
+  2:'medel – lagom utmanande, kräver lite koll på ämnet',
+  3:'svårt – riktigt knepiga frågor, expertkunskap och detaljkoll krävs'
+};
 const PRESETS=[
-  {label:'🎵 Popmusik 80-talet',    prompt:'Popmusik och hits från 80-talet – svenska och internationella artister, album, singlar.'},
-  {label:'🎸 Rock & Metal',         prompt:'Klassisk rock och heavy metal – band, album, låtar och musikhistoria.'},
-  {label:'🇸🇪 Svensk musik',        prompt:'Svenska artister, band och musikhistoria – från ABBA och Robyn till dagens pop.'},
-  {label:'🏙️ Umeå & Norrland',     prompt:'Fakta om Umeå, Norrland, lokala kändisare, geografi, historia och kultur.'},
-  {label:'🎬 Film & Serier',        prompt:'Populära filmer och TV-serier – internationellt och svenskt, blandat från olika decennier.'},
-  {label:'🧒 Barnfilmer & Disney',  prompt:'Barnfilmer, Disneyklassiker, Pixar och animerade filmer. Roliga frågor för alla åldrar.'},
-  {label:'⚽ Sport',                prompt:'Sport i allmänhet – fotboll, ishockey, OS, svenska idrottsstjärnor och mästerskap.'},
-  {label:'🍕 Mat & Dryck',          prompt:'Mat, dryck, matlagning och gastronomin – blandat från hela världen.'},
-  {label:'🌍 Geografi & Historia',  prompt:'Världsgeografi, länder, städer och historiska händelser.'},
-  {label:'🎮 Gaming & Teknik',      prompt:'Datorspel, spelhistoria, teknikhistoria och kända IT-företag.'},
-  {label:'🎭 90-talet nostalgi',    prompt:'Populärkultur, musik, film och händelser från 90-talet.'},
-  {label:'🌈 Blandat / Mix',        prompt:'En blandad quiz med lite av allt – musik, film, sport, geografi och allmänkunskap.'},
+  {label:'🎵 Popmusik 80-talet',   prompt:'Popmusik och hits från 80-talet – svenska och internationella artister, album, singlar.'},
+  {label:'🎸 Rock & Metal',        prompt:'Klassisk rock och heavy metal – band, album, låtar och musikhistoria.'},
+  {label:'🇸🇪 Svensk musik',       prompt:'Svenska artister, band och musikhistoria – från ABBA och Robyn till dagens pop.'},
+  {label:'🏙️ Umeå & Norrland',    prompt:'Fakta om Umeå, Norrland, lokala kändisare, geografi, historia och kultur.'},
+  {label:'🎬 Film & Serier',       prompt:'Populära filmer och TV-serier – internationellt och svenskt.'},
+  {label:'🧒 Barnfilmer & Disney', prompt:'Barnfilmer, Disneyklassiker, Pixar och animerade filmer.'},
+  {label:'⚽ Sport',               prompt:'Sport i allmänhet – fotboll, ishockey, OS och svenska idrottsstjärnor.'},
+  {label:'🍕 Mat & Dryck',         prompt:'Mat, dryck, matlagning och gastronomin – blandat från hela världen.'},
+  {label:'🌍 Geografi & Historia', prompt:'Världsgeografi, länder, städer och historiska händelser.'},
+  {label:'🎮 Gaming & Teknik',     prompt:'Datorspel, spelhistoria, teknikhistoria och kända IT-företag.'},
+  {label:'🎭 90-talet nostalgi',   prompt:'Populärkultur, musik, film och händelser från 90-talet.'},
+  {label:'🌈 Blandat / Mix',       prompt:'En blandad quiz med lite av allt – musik, film, sport, geografi och allmänkunskap.'},
 ];
-
-const DIFF_LABELS={1:'lätt – nybörjarvänliga frågor, välkända fakta',2:'medel – lagom utmanande, kräver lite koll',3:'svårt – riktigt knepiga frågor, expertkunskap krävs'};
 
 let myName='',myTeam='',isAdmin=false,isTeamMode=false;
 let myAnswers={},qCount=20,difficulty=1,timerIv=null,timerLeft=TIMER_SECS;
 let unsubscribe=null,lastPhase=null,lastQIdx=-1;
+let hasJoined=false; // track if we've gone past join screen
 
 function whenReady(fn){if(window._dbReady)fn();else window._firebaseLoaded=fn}
 function dbRef(p){return window._ref(window._db,p)}
@@ -418,10 +427,7 @@ window.setQCount=setQCount;
 
 function setDiff(n){
   difficulty=n;
-  [1,2,3].forEach(v=>{
-    const el=document.getElementById('diff'+v);
-    if(el){el.classList.toggle('active',v===n);}
-  });
+  [1,2,3].forEach(v=>{document.getElementById('diff'+v)?.classList.toggle('active',v===n)});
 }
 window.setDiff=setDiff;
 
@@ -443,26 +449,42 @@ async function joinGame(){
   const code=document.getElementById('inp-admin').value.trim();
   if(!name){shake('inp-name');return}
   if(isTeamMode&&!team){shake('inp-team');return}
-  myName=name;myTeam=isTeamMode?team:'';isAdmin=code===ADMIN_CODE;
+
+  myName=name; myTeam=isTeamMode?team:''; isAdmin=code===ADMIN_CODE;
+  hasJoined=true;
+
+  // Show admin reset button in header
+  if(isAdmin)document.getElementById('hdr-reset').style.display='';
+
   const hue=[...(myTeam||myName)].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
   const color=`hsl(${hue},65%,55%)`;
+
   whenReady(async()=>{
-    const phase=await dbGet(`${GAME_KEY}/phase`);
-    if(!phase)await dbSet(`${GAME_KEY}/phase`,'lobby');
+    // Check current game phase BEFORE registering
+    const currentPhase=await dbGet(`${GAME_KEY}/phase`);
+
+    // If a game is in progress and we're not admin, show wait screen
+    if(currentPhase&&currentPhase!=='lobby'&&currentPhase!=='final'&&!isAdmin){
+      showScreen('wait');
+      startListening(); // still listen so we jump in when lobby resets
+      return;
+    }
+
+    // If no phase yet, initialize
+    if(!currentPhase)await dbSet(`${GAME_KEY}/phase`,'lobby');
+
+    // Register entry
     const eKey=myTeam?`team_${myTeam.replace(/[.#$\/\[\] ]/g,'_')}`:
                        `solo_${myName.replace(/[.#$\/\[\] ]/g,'_')}`;
     window._myEntryKey=eKey;
     const existing=await dbGet(`${GAME_KEY}/entries/${eKey}`);
     if(myTeam){
-      if(!existing){
-        await dbSet(`${GAME_KEY}/entries/${eKey}`,{type:'team',name:myTeam,score:0,color,members:[myName]});
-      } else {
-        const members=existing.members||[];
-        if(!members.includes(myName)){members.push(myName);await dbSet(`${GAME_KEY}/entries/${eKey}/members`,members);}
-      }
+      if(!existing){await dbSet(`${GAME_KEY}/entries/${eKey}`,{type:'team',name:myTeam,score:0,color,members:[myName]});}
+      else{const m=existing.members||[];if(!m.includes(myName)){m.push(myName);await dbSet(`${GAME_KEY}/entries/${eKey}/members`,m);}}
     } else {
       if(!existing)await dbSet(`${GAME_KEY}/entries/${eKey}`,{type:'solo',name:myName,score:0,color,members:[myName]});
     }
+
     showScreen('lobby');renderLobbyControls();startListening();
   });
 }
@@ -520,38 +542,41 @@ function setPill(phase,state){
   pill.className='hdr-pill'+(['question','between'].includes(phase)?' live':'');
 }
 
-function handleLobby(state){showScreen('lobby');renderLobbyControls();renderEntries(state.entries)}
-function handleLoading(state){
-  showScreen('loading');clearTimer();
-  document.getElementById('loading-theme').textContent=state.theme?`🎯 "${state.theme}"…`:'Skapar frågor…';
+function handleLobby(state){
+  // If we came from wait screen, register ourselves now
+  if(hasJoined&&window._myEntryKey){
+    showScreen('lobby');renderLobbyControls();
+  } else if(hasJoined){
+    showScreen('lobby');renderLobbyControls();
+  }
+  renderEntries(state.entries);
+  // Show wait-admin button
+  document.getElementById('wait-admin').style.display=isAdmin?'':'none';
 }
 
+function handleLoading(state){showScreen('loading');clearTimer();document.getElementById('loading-theme').textContent=state.theme?`🎯 "${state.theme}"…`:'Skapar frågor…'}
+
 function handleQuestion(state){
+  // New player who joined during game – keep on wait screen
+  if(!hasJoined)return;
   const qIdx=state.currentQ||0;
-  if(lastPhase!=='question'||lastQIdx!==qIdx){
-    lastPhase='question';lastQIdx=qIdx;
-    renderQuestion(state,qIdx);
-  }
+  if(lastPhase!=='question'||lastQIdx!==qIdx){lastPhase='question';lastQIdx=qIdx;renderQuestion(state,qIdx);}
   renderScoreboard(state.entries,'sb-question');
   updateAnsweredCount(state,qIdx);
-  // Check if our team already answered – lock UI via realtime update
   checkTeamLock(state,qIdx);
 }
 
 function checkTeamLock(state,idx){
-  if(!myTeam)return; // solo – no lock needed
+  if(!myTeam)return;
   const ansKey=myTeam.replace(/[.#$\/\[\] ]/g,'_');
-  const answers=state.answers||{};
-  const teamAnswer=answers[ansKey]?.[idx];
+  const teamAnswer=(state.answers||{})[ansKey]?.[idx];
   if(teamAnswer&&myAnswers[idx]===undefined){
-    // Team answered but we haven't locally – show lock
-    myAnswers[idx]=teamAnswer.chosen; // mark locally so we don't re-render
+    myAnswers[idx]=teamAnswer.chosen;
     showTeamLocked(teamAnswer.by,teamAnswer.chosen,teamAnswer.correct,(state.questions||[])[idx]);
   }
 }
 
 function showTeamLocked(answeredBy,chosen,correct,q){
-  // Disable buttons
   document.querySelectorAll('.opt').forEach((b,i)=>{
     b.disabled=true;
     if(q&&i===q.correct)b.classList.add('correct');
@@ -559,17 +584,13 @@ function showTeamLocked(answeredBy,chosen,correct,q){
   });
   const lock=document.getElementById('team-locked');
   const result=document.getElementById('result-alert');
-  if(answeredBy===myName){
-    lock.style.display='none';
-    // Already shown via showAnswerResult
-  } else {
+  if(answeredBy!==myName){
     lock.style.display='';
     lock.textContent=`🔒 ${answeredBy} i ditt lag svarade redan!`;
-    // Also show correct/wrong
     if(q){
       result.style.display='';
       if(correct){result.className='result-alert ok';result.textContent=`✅ ${answeredBy} svarade rätt! Poäng för laget!`;}
-      else{result.className='result-alert bad';result.textContent=`❌ ${answeredBy} svarade fel. Rätt svar: "${q.options[q.correct]}"`;}
+      else{result.className='result-alert bad';result.textContent=`❌ ${answeredBy} svarade fel. Rätt: "${q.options[q.correct]}"`;}
     }
   }
 }
@@ -598,9 +619,7 @@ function handleFinal(state){
   document.getElementById('final-player-msg').style.display=isAdmin?'none':'';
 }
 
-function pointsForQ(idx){
-  if(idx<12)return 100;if(idx<16)return 150;if(idx<18)return 200;return 300;
-}
+function pointsForQ(idx){if(idx<12)return 100;if(idx<16)return 150;if(idx<18)return 200;return 300}
 
 function renderQuestion(state,idx){
   showScreen('question');
@@ -654,12 +673,8 @@ async function chooseAnswer(optIdx){
   const q=state.questions[idx],pts=pointsForQ(idx),correct=optIdx===q.correct;
   const eKey=window._myEntryKey;
   const ansKey=(myTeam||myName).replace(/[.#$\/\[\] ]/g,'_');
-  // Check if team already answered
   const existing=await dbGet(`${GAME_KEY}/answers/${ansKey}/${idx}`);
-  if(existing){
-    showTeamLocked(existing.by,existing.chosen,existing.correct,q);
-    return;
-  }
+  if(existing){showTeamLocked(existing.by,existing.chosen,existing.correct,q);return}
   let earned=0;
   if(correct){
     const bonus=Math.round((timerLeft/TIMER_SECS)*pts*0.5);
@@ -697,11 +712,9 @@ function showAnswerResult(idx,chosen,q,earned){
 }
 
 function renderScoreboard(entries,targetId){
-  const el=document.getElementById(targetId);
-  if(!el||!entries)return;
+  const el=document.getElementById(targetId);if(!el||!entries)return;
   const arr=Object.values(entries).sort((a,b)=>b.score-a.score);
-  const max=arr[0]?.score||1;
-  const icons=['👑','🥈','🥉'];
+  const max=arr[0]?.score||1,icons=['👑','🥈','🥉'];
   el.innerHTML=arr.map((e,i)=>{
     const isMe=e.members&&e.members.includes(myName);
     return `<div class="score-row ${i===0?'leader':''}">
@@ -740,8 +753,10 @@ async function adminGenerate(){
     setTimeout(()=>document.getElementById('inp-prompt').style.borderColor='',1500);
     return;
   }
-  await dbUpd(GAME_KEY,{phase:'loading',theme:prompt});
+  // Clear old questions from Firebase first!
+  await dbSet(GAME_KEY,{phase:'loading',theme:prompt,entries:await dbGet(`${GAME_KEY}/entries`),questions:null,currentQ:0,answers:null});
   const questions=await generateWithAI(prompt,qCount,difficulty);
+  // Reset scores
   const entries=await dbGet(`${GAME_KEY}/entries`);
   if(entries){for(const key of Object.keys(entries))await dbSet(`${GAME_KEY}/entries/${key}/score`,0)}
   await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
@@ -756,46 +771,41 @@ async function adminNext(){
 }
 window.adminNext=adminNext;
 
-async function adminReset(){
-  if(!confirm('Nollställ hela quizzen?'))return;
+// Hard reset – clears EVERYTHING, back to fresh lobby
+async function adminHardReset(){
+  if(!confirm('Nollställ allt? Alla spelare, poäng och frågor raderas.'))return;
+  myAnswers={};lastPhase=null;lastQIdx=-1;hasJoined=false;
+  await dbSet(GAME_KEY,null); // nuke everything
+  // Re-initialize
   await dbSet(GAME_KEY,{phase:'lobby'});
-  myAnswers={};lastPhase=null;lastQIdx=-1;
+  // Back to join screen
+  showScreen('join');
 }
-window.adminReset=adminReset;
+window.adminHardReset=adminHardReset;
 
-async function adminNewGame(){
-  myAnswers={};lastPhase=null;lastQIdx=-1;
-  await dbSet(GAME_KEY,{phase:'lobby',entries:null,questions:null,currentQ:0,answers:null,theme:null});
-}
-window.adminNewGame=adminNewGame;
-
-// ══════════════════════════════════
-//  AI GENERATION – med slump + datum för unika frågor varje gång
-// ══════════════════════════════════
 async function generateWithAI(userPrompt,count,diff){
   const diffText=DIFF_LABELS[diff]||DIFF_LABELS[1];
-  // Unique seed: timestamp + random number = garanterat nya frågor varje gång
   const seed=Date.now()+'-'+Math.floor(Math.random()*999999);
   const dateStr=new Date().toLocaleDateString('sv-SE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  const system=`Du är en proffsig och rolig quizmaster för en After Work-kväll på Combitech i Umeå, Sverige.
-Dagens datum: ${dateStr}. Quiz-ID: ${seed}.
+  const system=`Du är en kreativ och rolig quizmaster för After Work på Combitech i Umeå.
+Datum: ${dateStr}. Unikt quiz-ID: ${seed}.
 
-VIKTIGT – VARIATION: Varje quiz MÅSTE innehålla helt andra frågor än föregående quizzes.
-Använd quiz-ID:t som slumpfrö för att garantera unikhet. Välj ALDRIG de mest uppenbara frågorna om ett ämne.
-Undvik dessa överanvända frågor: "Vilket år grundades ABBA", "Vem sjunger Bohemian Rhapsody", "Smells Like Teen Spirit".
-Välj istället ovanligare fakta, b-sidor, specifika år, turnéer, samarbeten, B-låtar, mindre kända fakta inom temat.
+KRITISKT – VARIATION: Du MÅSTE generera helt andra frågor än vad som är uppenbart om ämnet.
+Förbjudna standardfrågor (använd ALDRIG): "Vilket år grundades ABBA", "Vem sjunger Bohemian Rhapsody", "Smells Like Teen Spirit", "Vilket år släpptes Thriller".
+Välj istället: ovanliga fakta, B-låtar, specifika turnéer, samarbeten, skivbolag, producenter, bakgrundshistorier, bortglömda hits, alternativa versioner.
 
-Svårighetsgrad: ${diffText}.
+Svårighetsgrad: ${diffText}
+Antal frågor: ${count}
 
-Skapa exakt ${count} UNIKA quizfrågor baserat på temat.
-- 4 svarsalternativ per fråga (index 0-3), exakt ett korrekt
-- Aldrig samma fakta två gånger inom samma quiz
-- Svårare frågor mot slutet (sista 20%)
-- Roliga och engagerande för vuxna på AW
+Format – svara ENBART med JSON-array utan backticks:
+[{"question":"…?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]
 
-Svara ENBART med JSON-array, inga backticks, inga kommentarer, inget annat:
-[{"question":"…?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]`;
+Krav:
+- Exakt ett korrekt svar per fråga
+- Aldrig samma fakta två gånger
+- Sista 20% av frågorna ska vara svårare
+- Roliga och engagerande för vuxna`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -803,31 +813,29 @@ Svara ENBART med JSON-array, inga backticks, inga kommentarer, inget annat:
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:5000,
-        temperature:1, // max kreativitet = max variation
         system,
-        messages:[{role:'user',content:`Tema: ${userPrompt}\nQuiz-ID: ${seed}\nGenerera ${count} frågor nu. Kom ihåg: välj OVANLIGA och VARIERANDE fakta!`}]
+        messages:[{role:'user',content:`Tema: ${userPrompt}\nQuiz-ID: ${seed}\nGenerera ${count} OVANLIGA och VARIERANDE frågor om detta tema. Undvik de mest uppenbara frågorna!`}]
       })
     });
     const data=await resp.json();
     const text=data.content.map(b=>b.text||'').join('');
-    const clean=text.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(clean);
-    if(Array.isArray(parsed)&&parsed.length>0)return parsed;
+    const json=text.match(/\[[\s\S]*\]/)?.[0];
+    if(json){const parsed=JSON.parse(json);if(Array.isArray(parsed)&&parsed.length>0)return parsed;}
   }catch(e){console.error('AI failed',e)}
-  // Fallback – varierande pool
+
+  // Fallback med shuffle
   const pool=[
     {question:"Vilket år spelade ABBA in 'Waterloo'?",options:["1972","1973","1974","1975"],correct:2,category:"🎵 Musik"},
     {question:"Vad heter Madonnas debutalbum?",options:["True Blue","Like a Virgin","Madonna","Immaculate Collection"],correct:2,category:"🎵 Musik"},
     {question:"Vilket band hade hits som 'Don't Stop Believin'?",options:["Bon Jovi","Journey","Foreigner","REO Speedwagon"],correct:1,category:"🎸 Rock"},
     {question:"Umeå universitets grundningsår?",options:["1955","1963","1971","1980"],correct:1,category:"🏙️ Umeå"},
-    {question:"Vilken svensk stad kallas 'Nordens Venedig'?",options:["Umeå","Stockholm","Göteborg","Karlstad"],correct:1,category:"🌍 Geografi"},
     {question:"'Eye of the Tiger' gjordes av vilket band?",options:["Survivor","Foreigner","Night Ranger","Asia"],correct:0,category:"🎸 Rock"},
-    {question:"Vem regisserade Titanic (1997)?",options:["Steven Spielberg","James Cameron","Ridley Scott","Peter Jackson"],correct:1,category:"🎬 Film"},
-    {question:"Vilket år lanserades Nintendo Entertainment System (NES) i Europa?",options:["1983","1985","1987","1990"],correct:2,category:"🎮 Gaming"},
+    {question:"Vem regisserade Titanic (1997)?",options:["Spielberg","James Cameron","Ridley Scott","Peter Jackson"],correct:1,category:"🎬 Film"},
+    {question:"Vilket år lanserades NES i Europa?",options:["1983","1985","1987","1990"],correct:2,category:"🎮 Gaming"},
     {question:"Vad är huvudingrediensen i guacamole?",options:["Tomat","Avokado","Lime","Koriander"],correct:1,category:"🍕 Mat"},
     {question:"Vilket land vann fotbolls-VM 2014?",options:["Brasilien","Argentina","Frankrike","Tyskland"],correct:3,category:"⚽ Sport"},
+    {question:"Vilken artist hette egentligen Prince Rogers Nelson?",options:["Prince","Michael Jackson","David Bowie","Elton John"],correct:0,category:"🎵 Musik"},
   ];
-  // Shuffle pool
   for(let i=pool.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   return pool.slice(0,count);
 }
