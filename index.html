@@ -788,28 +788,29 @@ async function adminHardReset(){
 window.adminHardReset=adminHardReset;
 
 async function generateWithAI(userPrompt,count,diff){
-  const diffText=DIFF_LABELS[diff]||DIFF_LABELS[1];
-  const seed=Date.now()+'-'+Math.floor(Math.random()*999999);
-  const dateStr=new Date().toLocaleDateString('sv-SE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  const system=`Du är en kreativ och rolig quizmaster för After Work på Combitech i Umeå.
-Datum: ${dateStr}. Unikt quiz-ID: ${seed}.
+  // Konkreta svårighetsregler per nivå
+  const diffRules={
+    1:`NIVÅ 1 – LÄTT: Fråga om välkända artister och låtar som de flesta känner till. Svaren ska vara tydliga. Inga frågor om specifika år, B-sidor eller producenter.`,
+    2:`NIVÅ 2 – MEDEL: Fråga om specifika fakta som kräver lite koll. OK med år, albumnamn och specifika låtar från kända artister.`,
+    3:`NIVÅ 3 – SVÅRT: Bara detaljer som riktiga fans vet. Producenter, skivbolag, B-sidor, turnénamn, tidiga lineups, ovanliga samarbeten. Inga uppenbara frågor.`
+  };
 
-KRITISKT – VARIATION: Du MÅSTE generera helt andra frågor än vad som är uppenbart om ämnet.
-Förbjudna standardfrågor (använd ALDRIG): "Vilket år grundades ABBA", "Vem sjunger Bohemian Rhapsody", "Smells Like Teen Spirit", "Vilket år släpptes Thriller".
-Välj istället: ovanliga fakta, B-låtar, specifika turnéer, samarbeten, skivbolag, producenter, bakgrundshistorier, bortglömda hits, alternativa versioner.
+  const seed=Date.now()+'-'+Math.floor(Math.random()*9999999);
+  const ts=new Date().toISOString();
 
-Svårighetsgrad: ${diffText}
-Antal frågor: ${count}
+  const system=`Du är quizmaster för After Work på Combitech i Umeå. TS:${ts} ID:${seed}
 
-Format – svara ENBART med JSON-array utan backticks:
-[{"question":"…?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]
+REGEL 1 – TEMA: Håll dig STRIKT till temat för ALLA frågor. Om temat är popmusik 80-talet ska ALLA frågor handla om just det – inga avvikelser till geografi, sport, mat eller annat som inte ingår i temat. Välj mer nischade aspekter av samma tema om du behöver fler frågor.
 
-Krav:
-- Exakt ett korrekt svar per fråga
-- Aldrig samma fakta två gånger
-- Sista 20% av frågorna ska vara svårare
-- Roliga och engagerande för vuxna`;
+REGEL 2 – SVÅRIGHET: ${diffRules[diff]||diffRules[1]}
+
+REGEL 3 – VARIATION: ID ${seed} är unikt – välj slumpmässigt från hela ämnesområdet. Fördela jämnt, börja inte alltid med samma artister. Sista 20% av frågorna ska vara svårare.
+
+FORMAT – svara ENBART med JSON-array, inga backticks, inget annat:
+[{"question":"Fråga?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]
+
+Krav: exakt 4 alternativ, exakt ett korrekt (correct=index 0-3), aldrig samma fakta två gånger.`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -817,28 +818,28 @@ Krav:
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:5000,
+        temperature:1,
         system,
-        messages:[{role:'user',content:`Tema: ${userPrompt}\nQuiz-ID: ${seed}\nGenerera ${count} OVANLIGA och VARIERANDE frågor om detta tema. Undvik de mest uppenbara frågorna!`}]
+        messages:[{role:'user',content:`TEMA: ${userPrompt}\nANTAL: ${count} frågor\nSVÅRIGHET: nivå ${diff}\nID: ${seed}\n\nGenerera frågorna nu. Håll dig STRIKT till temat "${userPrompt}".`}]
       })
     });
     const data=await resp.json();
     const text=data.content.map(b=>b.text||'').join('');
-    const json=text.match(/\[[\s\S]*\]/)?.[0];
+    const json=text.match(/\[\s\S]*\]/)?.[0];
     if(json){const parsed=JSON.parse(json);if(Array.isArray(parsed)&&parsed.length>0)return parsed;}
   }catch(e){console.error('AI failed',e)}
 
-  // Fallback med shuffle
   const pool=[
-    {question:"Vilket år spelade ABBA in 'Waterloo'?",options:["1972","1973","1974","1975"],correct:2,category:"🎵 Musik"},
+    {question:"Vilket band sjöng 'We Will Rock You'?",options:["Led Zeppelin","Queen","AC/DC","Kiss"],correct:1,category:"🎸 Rock"},
+    {question:"Vilket land kommer ABBA ifrån?",options:["Norge","Danmark","Finland","Sverige"],correct:3,category:"🎵 Musik"},
     {question:"Vad heter Madonnas debutalbum?",options:["True Blue","Like a Virgin","Madonna","Immaculate Collection"],correct:2,category:"🎵 Musik"},
-    {question:"Vilket band hade hits som 'Don't Stop Believin'?",options:["Bon Jovi","Journey","Foreigner","REO Speedwagon"],correct:1,category:"🎸 Rock"},
-    {question:"Umeå universitets grundningsår?",options:["1955","1963","1971","1980"],correct:1,category:"🏙️ Umeå"},
     {question:"'Eye of the Tiger' gjordes av vilket band?",options:["Survivor","Foreigner","Night Ranger","Asia"],correct:0,category:"🎸 Rock"},
+    {question:"Vilket år släpptes 'Thriller' av Michael Jackson?",options:["1980","1982","1984","1986"],correct:1,category:"🎵 Musik"},
     {question:"Vem regisserade Titanic (1997)?",options:["Spielberg","James Cameron","Ridley Scott","Peter Jackson"],correct:1,category:"🎬 Film"},
-    {question:"Vilket år lanserades NES i Europa?",options:["1983","1985","1987","1990"],correct:2,category:"🎮 Gaming"},
-    {question:"Vad är huvudingrediensen i guacamole?",options:["Tomat","Avokado","Lime","Koriander"],correct:1,category:"🍕 Mat"},
     {question:"Vilket land vann fotbolls-VM 2014?",options:["Brasilien","Argentina","Frankrike","Tyskland"],correct:3,category:"⚽ Sport"},
+    {question:"Vad är huvudingrediensen i guacamole?",options:["Tomat","Avokado","Lime","Koriander"],correct:1,category:"🍕 Mat"},
     {question:"Vilken artist hette egentligen Prince Rogers Nelson?",options:["Prince","Michael Jackson","David Bowie","Elton John"],correct:0,category:"🎵 Musik"},
+    {question:"Vilket band spelade 'Enter Sandman'?",options:["Slayer","Metallica","Megadeth","Anthrax"],correct:1,category:"🎸 Rock"},
   ];
   for(let i=pool.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   return pool.slice(0,count);
