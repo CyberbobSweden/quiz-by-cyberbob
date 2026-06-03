@@ -340,6 +340,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
   </main>
 </div>
 
+<script src="questions.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -371,18 +372,18 @@ const DIFF_LABELS={
   3:'svårt – riktigt knepiga frågor, expertkunskap och detaljkoll krävs'
 };
 const PRESETS=[
-  {label:'🎵 Popmusik 80-talet',   prompt:'Popmusik och hits från 80-talet – svenska och internationella artister, album, singlar.'},
-  {label:'🎸 Rock & Metal',        prompt:'Klassisk rock och heavy metal – band, album, låtar och musikhistoria.'},
-  {label:'🇸🇪 Svensk musik',       prompt:'Svenska artister, band och musikhistoria – från ABBA och Robyn till dagens pop.'},
-  {label:'🏙️ Umeå & Norrland',    prompt:'Fakta om Umeå, Norrland, lokala kändisare, geografi, historia och kultur.'},
-  {label:'🎬 Film & Serier',       prompt:'Populära filmer och TV-serier – internationellt och svenskt.'},
-  {label:'🧒 Barnfilmer & Disney', prompt:'Barnfilmer, Disneyklassiker, Pixar och animerade filmer.'},
-  {label:'⚽ Sport',               prompt:'Sport i allmänhet – fotboll, ishockey, OS och svenska idrottsstjärnor.'},
-  {label:'🍕 Mat & Dryck',         prompt:'Mat, dryck, matlagning och gastronomin – blandat från hela världen.'},
-  {label:'🌍 Geografi & Historia', prompt:'Världsgeografi, länder, städer och historiska händelser.'},
-  {label:'🎮 Gaming & Teknik',     prompt:'Datorspel, spelhistoria, teknikhistoria och kända IT-företag.'},
-  {label:'🎭 90-talet nostalgi',   prompt:'Populärkultur, musik, film och händelser från 90-talet.'},
-  {label:'🌈 Blandat / Mix',       prompt:'En blandad quiz med lite av allt – musik, film, sport, geografi och allmänkunskap.'},
+  {label:'🎵 Popmusik',       cat:'🎵 Popmusik'},
+  {label:'🎸 Rock & Metal',   cat:'🎸 Rock & Metal'},
+  {label:'🇸🇪 Svensk musik',  cat:'🇸🇪 Svensk musik'},
+  {label:'🏙️ Umeå & Norrland',cat:'🏙️ Umeå & Norrland'},
+  {label:'🎬 Film & Serier',  cat:'🎬 Film & Serier'},
+  {label:'🧒 Barnfilmer & Disney',cat:'🧒 Barnfilmer & Disney'},
+  {label:'⚽ Sport',          cat:'⚽ Sport'},
+  {label:'🍕 Mat & Dryck',    cat:'🍕 Mat & Dryck'},
+  {label:'🌍 Geografi & Historia',cat:'🌍 Geografi & Historia'},
+  {label:'🎮 Gaming & Teknik',cat:'🎮 Gaming & Teknik'},
+  {label:'🎭 90-talet',       cat:'🎭 90-talet'},
+  {label:'🌈 Blandat / Mix',  cat:'mix'},
 ];
 
 let myName='',myTeam='',isAdmin=false,isTeamMode=false;
@@ -415,7 +416,8 @@ function dbListen(p,cb){return window._onValue(dbRef(p),s=>cb(s.val()))}
   PRESETS.forEach(p=>{
     const b=document.createElement('button');b.className='preset';b.textContent=p.label;
     b.onclick=()=>{
-      document.getElementById('inp-prompt').value=p.prompt;
+      document.getElementById('inp-prompt').value=p.label;
+      window._selectedCat=p.cat;
       document.querySelectorAll('.preset-grid .preset').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
     };
@@ -788,6 +790,14 @@ async function adminHardReset(){
   startListening();
 }
 window.adminHardReset=adminHardReset;
+
+function getQuestionsFromDB(category, difficulty, count) {
+  if (typeof getQuestions === 'undefined') {
+    console.error('questions.js not loaded!');
+    return [];
+  }
+  return getQuestions(category, difficulty, count);
+}
 
 async function generateWithAI(userPrompt,count,diff){
   const apiKey=GEMINI_KEY;
