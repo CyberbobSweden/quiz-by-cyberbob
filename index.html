@@ -210,12 +210,9 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div id="admin-setup" style="display:none">
           <div class="warn-box mb16">👑 Du är admin – välj tema, svårighet och starta!</div>
           <div class="field">
-            <label>Quiz-tema – beskriv vad du vill ha för frågor</label>
-            <textarea id="inp-prompt" placeholder="T.ex: Popmusik från 80-talet, svenska och internationella hits…"></textarea>
-          </div>
-          <div class="field">
-            <label>Snabbval</label>
+            <label>Välj kategori</label>
             <div class="preset-grid" id="preset-grid"></div>
+            <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.82rem;margin-top:6px">⚠️ Välj en kategori ovan!</p>
           </div>
           <div class="field">
             <label>Svårighetsgrad</label>
@@ -419,8 +416,8 @@ function dbListen(p,cb){return window._onValue(dbRef(p),s=>cb(s.val()))}
   PRESETS.forEach(p=>{
     const b=document.createElement('button');b.className='preset';b.textContent=p.label;
     b.onclick=()=>{
-      document.getElementById('inp-prompt').value=p.label;
       window._selectedCat=p.cat;
+      document.getElementById('cat-warning').style.display='none';
       document.querySelectorAll('.preset-grid .preset').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
     };
@@ -751,11 +748,11 @@ function renderFinal(entries){
 async function adminGenerate(){
   const cat = window._selectedCat;
   if(!cat){
-    alert('Välj en kategori först!');
+    document.getElementById('cat-warning').style.display='';
     return;
   }
   const savedEntries = await dbGet(`${GAME_KEY}/entries`);
-  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null});
+  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null,difficulty,qCount});
 
   // Get questions from local DB with correct count and difficulty
   const questions = getQuestionsFromDB(cat, difficulty, qCount);
@@ -897,7 +894,7 @@ function spawnConfetti(n=40){
 }
 </script>
 <div style="position:fixed;bottom:8px;right:12px;font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;pointer-events:none;z-index:999">
-  v2026.06.03-1ddffee
+  v2026.06.03-b42a99a
 </div>
 </body>
 </html>
