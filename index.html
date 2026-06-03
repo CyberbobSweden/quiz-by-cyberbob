@@ -271,6 +271,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div class="q-header">
           <span class="badge badge-blue" id="q-num">Fråga 1 / 20</span>
           <span class="badge badge-gold" id="q-pts">⭐ 100 p</span>
+          <span class="badge" id="q-bonus-info" style="background:rgba(255,255,255,.06);color:var(--muted);font-size:.68rem"></span>
         </div>
         <div class="timer-wrap">
           <div class="timer-track"><div class="timer-bar" id="timer-bar"></div></div>
@@ -587,7 +588,9 @@ function checkTeamLock(state,idx){
   const ansKey=myTeam.replace(/[.#$\/\[\] ]/g,'_');
   const teamAnswer=(state.answers||{})[ansKey]?.[idx];
   if(teamAnswer&&myAnswers[idx]===undefined){
-    myAnswers[idx]=teamAnswer.chosen;
+    myAnswers[idx]=teamAnswer.chosen; // mark immediately so we don't re-trigger
+    // Disable all answer buttons RIGHT AWAY
+    document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
     showTeamLocked(teamAnswer.by,teamAnswer.chosen,teamAnswer.correct,(state.questions||[])[idx]);
   }
 }
@@ -622,7 +625,7 @@ function handleBetween(state){
   if(isAdmin){
     document.getElementById('between-admin').style.display='';
     document.getElementById('between-wait').style.display='none';
-    document.getElementById('btn-next').textContent=nextIdx>=total?'🏆 Visa slutresultat':`Nästa fråga → (⭐ ${pointsForQ(nextIdx)} p)`;
+    document.getElementById('btn-next').textContent=nextIdx>=total?'🏆 Visa slutresultat':`Nästa fråga → (⭐ ${pointsForQ(nextIdx,total)} p)`;
   } else {
     document.getElementById('between-admin').style.display='none';
     document.getElementById('between-wait').style.display='';
@@ -635,14 +638,27 @@ function handleFinal(state){
   document.getElementById('final-player-msg').style.display=isAdmin?'none':'';
 }
 
-function pointsForQ(idx){if(idx<12)return 100;if(idx<16)return 150;if(idx<18)return 200;return 300}
+function pointsForQ(idx, total) {
+  // Dynamisk poängskala baserad på total antal frågor
+  // Sista 20% = 300p (BONUS-runda), 60-80% = 200p, 40-60% = 150p, 0-40% = 100p
+  const pct = idx / Math.max(total - 1, 1);
+  if (pct < 0.40) return 100;
+  if (pct < 0.60) return 150;
+  if (pct < 0.80) return 200;
+  return 300; // Sista 20% = bonusrunda!
+}
 
 function renderQuestion(state,idx){
   showScreen('question');
   const q=(state.questions||[])[idx];if(!q)return;
-  const pts=pointsForQ(idx),total=(state.questions||[]).length;
+  const total=(state.questions||[]).length;
+  const pts=pointsForQ(idx,total);
   document.getElementById('q-num').textContent=`Fråga ${idx+1} / ${total}`;
   document.getElementById('q-pts').textContent=`⭐ ${pts} p`;
+  // Show tier label
+  const tier = pts===300?'🔥 BONUS-runda!':pts===200?'💎 Dubbelt!':pts===150?'⚡ Halvtid+':'';
+  const bonusEl = document.getElementById('q-bonus-info');
+  if(bonusEl) bonusEl.textContent = tier;
   document.getElementById('q-cat').textContent=q.category||'🎵 Musik';
   document.getElementById('q-text').textContent=q.question;
   document.getElementById('live-q-label').textContent=`fråga ${idx+1}`;
@@ -686,7 +702,8 @@ async function chooseAnswer(optIdx){
   const idx=state.currentQ||0;
   if(myAnswers[idx]!==undefined)return;
   myAnswers[idx]=optIdx;
-  const q=state.questions[idx],pts=pointsForQ(idx),correct=optIdx===q.correct;
+  const total=(state.questions||[]).length;
+  const q=state.questions[idx],pts=pointsForQ(idx,total),correct=optIdx===q.correct;
   const eKey=window._myEntryKey;
   const ansKey=(myTeam||myName).replace(/[.#$\/\[\] ]/g,'_');
   const existing=await dbGet(`${GAME_KEY}/answers/${ansKey}/${idx}`);
@@ -719,7 +736,8 @@ function showAnswerResult(idx,chosen,q,earned){
   alert.style.display='';
   if(chosen===q.correct){
     alert.className='result-alert ok';
-    alert.textContent=earned?`✅ Rätt! +${earned} poäng (inkl. tidbonus 🚀)`:'✅ Rätt!';
+    const base=pts; const bonus=earned-base;
+    alert.textContent=earned?`✅ Rätt! +${base} p${bonus>0?' + '+bonus+' p tidbonus = '+earned+' p totalt 🚀':''}`:'✅ Rätt!';
     spawnConfetti(30);
   } else {
     alert.className='result-alert bad';
