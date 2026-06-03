@@ -810,7 +810,7 @@ REGEL 3 – VARIATION: ID ${seed} är unikt – välj slumpmässigt från hela �
 FORMAT – svara ENBART med JSON-array, inga backticks, inget annat:
 [{"question":"Fråga?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]
 
-Krav: exakt 4 alternativ, exakt ett korrekt (correct=index 0-3), aldrig samma fakta två gånger.`;
+Krav: exakt ${count} frågor i arrayen, exakt 4 alternativ per fråga, exakt ett korrekt (correct=index 0-3), aldrig samma fakta två gånger.`;
 
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -820,12 +820,12 @@ Krav: exakt 4 alternativ, exakt ett korrekt (correct=index 0-3), aldrig samma fa
         max_tokens:5000,
         temperature:1,
         system,
-        messages:[{role:'user',content:`TEMA: ${userPrompt}\nANTAL: ${count} frågor\nSVÅRIGHET: nivå ${diff}\nID: ${seed}\n\nGenerera frågorna nu. Håll dig STRIKT till temat "${userPrompt}".`}]
+        messages:[{role:'user',content:`TEMA: ${userPrompt}\nANTAL FRÅGOR: exakt ${count} stycken – varken fler eller färre!\nSVÅRIGHET: nivå ${diff}\nID: ${seed}\n\nGenerera exakt ${count} frågor nu. Håll dig STRIKT till temat "${userPrompt}".`}]
       })
     });
     const data=await resp.json();
     const text=data.content.map(b=>b.text||'').join('');
-    const json=text.match(/\[\s\S]*\]/)?.[0];
+    const json=text.match(/\[[\s\S]*\]/)?.[0];
     if(json){const parsed=JSON.parse(json);if(Array.isArray(parsed)&&parsed.length>0)return parsed;}
   }catch(e){console.error('AI failed',e)}
 
