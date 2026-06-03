@@ -295,7 +295,12 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div class="scoreboard" id="sb-final"></div>
         <hr>
         <div class="row" style="justify-content:center">
-          <button class="btn btn-outline" onclick="location.reload()">🔄 Spela igen</button>
+          <div id="final-admin-btn" style="display:none">
+            <button class="btn btn-gold btn-lg" onclick="adminNewGame()">🎉 Starta ny quiz</button>
+          </div>
+          <div id="final-player-msg" style="display:none">
+            <p class="dim" style="font-size:.85rem">⏳ Väntar på att admin startar en ny quiz…</p>
+          </div>
         </div>
       </div>
     </div>
@@ -520,7 +525,7 @@ function handleBetween(state){
   }
 }
 
-function handleFinal(state){clearTimer();showScreen('final');spawnConfetti(150);renderFinal(state.entries)}
+function handleFinal(state){clearTimer();showScreen('final');spawnConfetti(150);renderFinal(state.entries);document.getElementById('final-admin-btn').style.display=isAdmin?'':'none';document.getElementById('final-player-msg').style.display=isAdmin?'none':''}
 
 function pointsForQ(idx){
   if(idx<12)return 100;
@@ -684,6 +689,13 @@ async function adminReset(){
   myAnswers={};lastPhase=null;lastQIdx=-1;
 }
 window.adminReset=adminReset;
+
+async function adminNewGame(){
+  // Rensa allt utom spelare
+  myAnswers={};lastPhase=null;lastQIdx=-1;
+  await dbSet(GAME_KEY,{phase:"lobby",entries:null,questions:null,currentQ:0,answers:null,theme:null});
+}
+window.adminNewGame=adminNewGame;
 
 async function generateWithAI(userPrompt,count){
   const system=`Du är en proffsig quizmaster för en After Work-kväll på Combitech i Umeå, Sverige.
