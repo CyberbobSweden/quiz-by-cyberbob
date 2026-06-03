@@ -360,6 +360,8 @@ window._dbReady=true;window._firebaseLoaded&&window._firebaseLoaded();
 </script>
 
 <script>
+// Nyckeln injiceras automatiskt av GitHub Actions – rör inte denna rad!
+const GEMINI_KEY = 'AQ.Ab8RN6J3DRd7jYpCi--exgRjx4E0lghO82JO84Cy5VvaM1r5rA';
 const ADMIN_CODE='combitech2024';
 const TIMER_SECS=15;
 const GAME_KEY='combitech-quiz-game';
@@ -788,46 +790,50 @@ async function adminHardReset(){
 window.adminHardReset=adminHardReset;
 
 async function generateWithAI(userPrompt,count,diff){
+  const apiKey=GEMINI_KEY;
+  if(!apiKey||apiKey.includes('GEMINI_KEY')){
+    alert('API-nyckel saknas! Kontakta admin.');
+    return[];
+  }
 
-  // Konkreta svårighetsregler per nivå
   const diffRules={
-    1:`NIVÅ 1 – LÄTT: Fråga om välkända artister och låtar som de flesta känner till. Svaren ska vara tydliga. Inga frågor om specifika år, B-sidor eller producenter.`,
-    2:`NIVÅ 2 – MEDEL: Fråga om specifika fakta som kräver lite koll. OK med år, albumnamn och specifika låtar från kända artister.`,
-    3:`NIVÅ 3 – SVÅRT: Bara detaljer som riktiga fans vet. Producenter, skivbolag, B-sidor, turnénamn, tidiga lineups, ovanliga samarbeten. Inga uppenbara frågor.`
+    1:'NIVÅ 1 – LÄTT: Fråga om välkända artister och låtar som de flesta känner till. Inga frågor om specifika år, B-sidor eller producenter.',
+    2:'NIVÅ 2 – MEDEL: Fråga om specifika fakta som kräver lite koll. OK med år, albumnamn och specifika låtar från kända artister.',
+    3:'NIVÅ 3 – SVÅRT: Bara detaljer som riktiga fans vet. Producenter, skivbolag, B-sidor, turnénamn, tidiga lineups. Inga uppenbara frågor.'
   };
 
   const seed=Date.now()+'-'+Math.floor(Math.random()*9999999);
   const ts=new Date().toISOString();
 
-  const system=`Du är quizmaster för After Work på Combitech i Umeå. TS:${ts} ID:${seed}
+  const prompt=`Du är quizmaster för After Work på Combitech i Umeå. TS:${ts} ID:${seed}
 
-REGEL 1 – TEMA: Håll dig STRIKT till temat för ALLA frågor. Om temat är popmusik 80-talet ska ALLA frågor handla om just det – inga avvikelser till geografi, sport, mat eller annat som inte ingår i temat. Välj mer nischade aspekter av samma tema om du behöver fler frågor.
-
+REGEL 1 – TEMA: Håll dig STRIKT till temat för ALLA frågor. Temat är: "${userPrompt}". Inga avvikelser till andra ämnen.
 REGEL 2 – SVÅRIGHET: ${diffRules[diff]||diffRules[1]}
+REGEL 3 – VARIATION: ID ${seed} garanterar unikhet – välj slumpmässigt. Sista 20% av frågorna ska vara svårare.
 
-REGEL 3 – VARIATION: ID ${seed} är unikt – välj slumpmässigt från hela ämnesområdet. Fördela jämnt, börja inte alltid med samma artister. Sista 20% av frågorna ska vara svårare.
-
-FORMAT – svara ENBART med JSON-array, inga backticks, inget annat:
+Generera exakt ${count} frågor om temat "${userPrompt}".
+Svara ENBART med JSON-array, inga backticks, inget annat:
 [{"question":"Fråga?","options":["A","B","C","D"],"correct":0,"category":"emoji Kategori"}]
-
-Krav: exakt ${count} frågor i arrayen, exakt 4 alternativ per fråga, exakt ett korrekt (correct=index 0-3), aldrig samma fakta två gånger.`;
+Krav: exakt ${count} frågor, 4 alternativ per fråga, exakt ett korrekt (correct=index 0-3), aldrig samma fakta två gånger.`;
 
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:5000,
-        temperature:1,
-        system,
-        messages:[{role:'user',content:`TEMA: ${userPrompt}\nANTAL FRÅGOR: exakt ${count} stycken – varken fler eller färre!\nSVÅRIGHET: nivå ${diff}\nID: ${seed}\n\nGenerera exakt ${count} frågor nu. Håll dig STRIKT till temat "${userPrompt}".`}]
-      })
-    });
+    const resp=await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          contents:[{parts:[{text:prompt}]}],
+          generationConfig:{temperature:1.0,maxOutputTokens:8192}
+        })
+      }
+    );
     const data=await resp.json();
-    const text=data.content.map(b=>b.text||'').join('');
+    if(data.error){console.error('Gemini error:',data.error.message);throw new Error(data.error.message);}
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
     const json=text.match(/\[[\s\S]*\]/)?.[0];
     if(json){const parsed=JSON.parse(json);if(Array.isArray(parsed)&&parsed.length>0)return parsed;}
-  }catch(e){console.error('AI failed',e)}
+  }catch(e){console.error('Gemini failed:',e)}
 
   const pool=[
     {question:"Vilket band sjöng 'We Will Rock You'?",options:["Led Zeppelin","Queen","AC/DC","Kiss"],correct:1,category:"🎸 Rock"},
