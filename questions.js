@@ -321,13 +321,14 @@ function getQuestions(category, difficulty, count) {
     const qs = QUESTION_DB[cat] || [];
     pool = pool.concat(qs.filter(q => q.d <= difficulty));
   });
-  // Shuffle
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+  // Crypto-quality shuffle för riktig slumpmässighet varje gång
+  const arr = pool.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor((crypto.getRandomValues(new Uint32Array(1))[0] / 0xFFFFFFFF) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   // Format to quiz format
-  return pool.slice(0, count).map(q => ({
+  return arr.slice(0, count).map(q => ({
     question: q.q,
     options: q.o,
     correct: q.a,

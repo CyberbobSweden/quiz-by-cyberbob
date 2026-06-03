@@ -287,6 +287,9 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div class="options" id="options"></div>
         <div class="team-locked" id="team-locked">🔒 Ditt lag har redan svarat!</div>
         <div class="result-alert" id="result-alert"></div>
+        <div style="margin-top:16px;text-align:right">
+          <button class="btn btn-outline btn-sm" onclick="leaveQuiz()">🚪 Lämna quiz</button>
+        </div>
       </div>
       <div class="card">
         <div class="row mb8">
@@ -746,19 +749,25 @@ function renderFinal(entries){
 }
 
 async function adminGenerate(){
-  const prompt=document.getElementById('inp-prompt').value.trim();
-  if(!prompt){
-    document.getElementById('inp-prompt').style.borderColor='var(--wrong)';
-    document.getElementById('inp-prompt').focus();
-    setTimeout(()=>document.getElementById('inp-prompt').style.borderColor='',1500);
+  const cat = window._selectedCat;
+  if(!cat){
+    alert('Välj en kategori först!');
     return;
   }
-  // Clear old questions from Firebase first!
-  await dbSet(GAME_KEY,{phase:'loading',theme:prompt,entries:await dbGet(`${GAME_KEY}/entries`),questions:null,currentQ:0,answers:null});
-  const questions=await generateWithAI(prompt,qCount,difficulty);
+  const savedEntries = await dbGet(`${GAME_KEY}/entries`);
+  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null});
+
+  // Get questions from local DB with correct count and difficulty
+  const questions = getQuestionsFromDB(cat, difficulty, qCount);
+
+  if(!questions || questions.length === 0){
+    alert('Inga frågor hittades för den kategorin!');
+    return;
+  }
+
   // Reset scores
-  const entries=await dbGet(`${GAME_KEY}/entries`);
-  if(entries){for(const key of Object.keys(entries))await dbSet(`${GAME_KEY}/entries/${key}/score`,0)}
+  const entries = await dbGet(`${GAME_KEY}/entries`);
+  if(entries){for(const key of Object.keys(entries)) await dbSet(`${GAME_KEY}/entries/${key}/score`,0)}
   await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
 }
 window.adminGenerate=adminGenerate;
@@ -790,6 +799,21 @@ async function adminHardReset(){
   startListening();
 }
 window.adminHardReset=adminHardReset;
+
+function leaveQuiz(){
+  if(!confirm('Vill du lämna quizzen och börja om?'))return;
+  clearTimer();
+  myAnswers={};lastPhase=null;lastQIdx=-1;hasJoined=false;
+  window._selectedCat=null;
+  isTeamMode=false;myName='';myTeam='';isAdmin=false;
+  document.getElementById('inp-name').value='';
+  document.getElementById('inp-admin').value='';
+  document.getElementById('team-toggle').classList.remove('on');
+  document.getElementById('team-field').style.display='none';
+  document.getElementById('hdr-reset').style.display='none';
+  showScreen('join');
+}
+window.leaveQuiz=leaveQuiz;
 
 function getQuestionsFromDB(category, difficulty, count) {
   if (typeof getQuestions === 'undefined') {
