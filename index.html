@@ -555,44 +555,47 @@ function showScreen(id){
 }
 
 async function joinGame(){
-  const name=document.getElementById('inp-name').value.trim();
-  const team=document.getElementById('inp-team')?.value.trim()||'';
-  const code=document.getElementById('inp-admin').value.trim();
-  if(!name){shake('inp-name');return}
+  const roomInput=(document.getElementById('inp-room')?.value||'').trim().toUpperCase();
+  const name=(document.getElementById('inp-name-join')?.value||'').trim();
+  const team=(document.getElementById('inp-team')?.value||'').trim();
+  if(!roomInput||roomInput.length<4){shake('inp-room');return}
+  if(!name){shake('inp-name-join');return}
   if(isTeamMode&&!team){shake('inp-team');return}
 
-  myName=name; myTeam=isTeamMode?team:''; isAdmin=code===ADMIN_CODE;
+  myName=name; myTeam=isTeamMode?team:''; isAdmin=false;
   hasJoined=true;
+  GAME_KEY='rooms/'+roomInput;
+  window._roomCode=roomInput;
+
+  document.getElementById('hdr-room-code').textContent='Rum: '+roomInput;
+  document.getElementById('hdr-room-code').style.display='';
 
   const hue=[...(myTeam||myName)].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
   const color=`hsl(${hue},65%,55%)`;
 
   whenReady(async()=>{
-    // Check current game phase BEFORE registering
-    const currentPhase=await dbGet(`${GAME_KEY}/phase`);
-
-    // If a game is in progress and we're not admin, show wait screen
-    if(currentPhase&&currentPhase!=='lobby'&&currentPhase!=='final'&&!isAdmin){
-      showScreen('wait');
-      startListening(); // still listen so we jump in when lobby resets
+    const currentPhase=await dbGet(GAME_KEY+'/phase');
+    if(!currentPhase){
+      alert('Rummet "'+roomInput+'" hittades inte! Kontrollera koden.');
+      hasJoined=false; GAME_KEY='combitech-quiz-game';
+      document.getElementById('hdr-room-code').style.display='none';
       return;
     }
-
-    // If no phase yet, initialize
-    if(!currentPhase)await dbSet(`${GAME_KEY}/phase`,'lobby');
-
-    // Register entry
-    const eKey=myTeam?`team_${myTeam.replace(/[.#$\/\[\] ]/g,'_')}`:
-                       `solo_${myName.replace(/[.#$\/\[\] ]/g,'_')}`;
-    window._myEntryKey=eKey;
-    const existing=await dbGet(`${GAME_KEY}/entries/${eKey}`);
-    if(myTeam){
-      if(!existing){await dbSet(`${GAME_KEY}/entries/${eKey}`,{type:'team',name:myTeam,score:0,color,members:[myName]});}
-      else{const m=existing.members||[];if(!m.includes(myName)){m.push(myName);await dbSet(`${GAME_KEY}/entries/${eKey}/members`,m);}}
-    } else {
-      if(!existing)await dbSet(`${GAME_KEY}/entries/${eKey}`,{type:'solo',name:myName,score:0,color,members:[myName]});
+    if(currentPhase!=='lobby'&&currentPhase!=='final'){
+      showScreen('wait');
+      startListening();
+      return;
     }
-
+    const eKey=myTeam?'team_'+myTeam.replace(/[.#$\/\[\] ]/g,'_'):
+                      'solo_'+myName.replace(/[.#$\/\[\] ]/g,'_');
+    window._myEntryKey=eKey;
+    const existing=await dbGet(GAME_KEY+'/entries/'+eKey);
+    if(myTeam){
+      if(!existing){await dbSet(GAME_KEY+'/entries/'+eKey,{type:'team',name:myTeam,score:0,color,members:[myName]});}
+      else{const m=existing.members||[];if(!m.includes(myName)){m.push(myName);await dbSet(GAME_KEY+'/entries/'+eKey+'/members',m);}}
+    } else {
+      if(!existing)await dbSet(GAME_KEY+'/entries/'+eKey,{type:'solo',name:myName,score:0,color,members:[myName]});
+    }
     showScreen('lobby');renderLobbyControls();startListening();
   });
 }
