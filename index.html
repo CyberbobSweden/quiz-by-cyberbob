@@ -170,33 +170,54 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
   </header>
   <main>
 
-    <!-- JOIN -->
+    <!-- JOIN – Välj: skapa eller gå med -->
     <div class="screen active" id="screen-join">
       <div class="card">
         <h1>Välkommen till<br><span class="accent">AW Quiz! 🎉</span></h1>
-        <p class="mt8">Spela ensam eller i lag – skriv samma lagnamn som dina lagkamrater!</p>
+        <p class="mt8">Skapa ett nytt quiz-rum eller gå med i ett befintligt med en rumskod.</p>
         <hr>
-        <div class="field">
-          <label>Ditt namn</label>
-          <input type="text" id="inp-name" placeholder="Vad heter du?" maxlength="24" autocomplete="off">
+
+        <!-- TAB SWITCHER -->
+        <div class="row mb16" style="gap:8px">
+          <button class="btn btn-primary" id="tab-create" onclick="switchTab('create')" style="flex:1">➕ Skapa rum</button>
+          <button class="btn btn-outline" id="tab-join" onclick="switchTab('join')" style="flex:1">🚪 Gå med</button>
         </div>
-        <div class="toggle-row">
-          <span class="toggle-label">🏆 Spela i lag</span>
-          <div class="toggle-switch" id="team-toggle" onclick="toggleTeam()"></div>
-        </div>
-        <div id="team-field" style="display:none">
+
+        <!-- CREATE ROOM -->
+        <div id="panel-create">
+          <div class="info-box mb16">👑 Du skapar ett nytt quiz-rum och blir automatiskt admin!</div>
           <div class="field">
-            <label>Lagnamn <span class="dim">(alla i laget skriver exakt samma!)</span></label>
-            <input type="text" id="inp-team" placeholder="T.ex. Lag Norrland, Team Umeå…" maxlength="28" autocomplete="off">
+            <label>Ditt namn</label>
+            <input type="text" id="inp-name-create" placeholder="Vad heter du?" maxlength="24" autocomplete="off">
           </div>
-          <div class="info-box mb8">💡 Alla lagmedlemmar skriver <strong>exakt samma lagnamn</strong> – första i laget som svarar låser svaret för hela laget!</div>
+          <button class="btn btn-gold btn-block btn-lg mt8" onclick="createRoom()">Skapa rum →</button>
         </div>
-        <div class="field mt8">
-          <label>Admin-kod <span class="dim">(lämna tomt om du bara spelar)</span></label>
-          <input type="text" id="inp-admin" placeholder="Hemlig kod…" maxlength="30" autocomplete="off">
+
+        <!-- JOIN ROOM -->
+        <div id="panel-join" style="display:none">
+          <div class="field">
+            <label>Rumskod <span class="dim">(4 bokstäver från admin)</span></label>
+            <input type="text" id="inp-room" placeholder="T.ex. QUIZ" maxlength="6" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-family:monospace;font-size:1.2rem;text-align:center">
+          </div>
+          <div class="field">
+            <label>Ditt namn</label>
+            <input type="text" id="inp-name-join" placeholder="Vad heter du?" maxlength="24" autocomplete="off">
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">🏆 Spela i lag</span>
+            <div class="toggle-switch" id="team-toggle" onclick="toggleTeam()"></div>
+          </div>
+          <div id="team-field" style="display:none">
+            <div class="field">
+              <label>Lagnamn <span class="dim">(alla skriver exakt samma!)</span></label>
+              <input type="text" id="inp-team" placeholder="T.ex. Lag Norrland…" maxlength="28" autocomplete="off">
+            </div>
+            <div class="info-box mb8">💡 Alla lagmedlemmar skriver <strong>exakt samma lagnamn</strong> – första som svarar låser svaret för laget!</div>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg mt8" onclick="joinGame()">Häng med →</button>
         </div>
-        <button class="btn btn-primary btn-block btn-lg mt8" onclick="joinGame()">Häng med →</button>
-        <p class="mt16 tc" style="font-size:.78rem;color:var(--muted)">Dela denna URL med alla – de behöver bara ange namn! 🔗</p>
+
+        <p class="mt16 tc" style="font-size:.78rem;color:var(--muted)">Admin delar rumskoden med alla deltagare 🔑</p>
       </div>
     </div>
 
@@ -357,6 +378,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions.js"></script>
 <script src="questions2.js"></script>
 <script src="questions3.js"></script>
+<script src="questions4.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -379,9 +401,9 @@ window._dbReady=true;window._firebaseLoaded&&window._firebaseLoaded();
 <script>
 // Nyckeln injiceras automatiskt av GitHub Actions – rör inte denna rad!
 const GEMINI_KEY = '%%GEMINI_KEY%%';
-const ADMIN_CODE='combitech2024';
+// Inget statiskt admin-lösenord – admin är den som skapar rummet!
 const TIMER_SECS=15;
-const GAME_KEY='combitech-quiz-game';
+let GAME_KEY='combitech-quiz-game'; // uppdateras med rumskod
 const DIFF_LABELS={
   1:'lätt – nybörjarvänliga frågor, välkända fakta som de flesta känner till',
   2:'medel – lagom utmanande, kräver lite koll på ämnet',
@@ -465,6 +487,60 @@ function setDiff(n){
   [1,2,3].forEach(v=>{document.getElementById('diff'+v)?.classList.toggle('active',v===n)});
 }
 window.setDiff=setDiff;
+
+function switchTab(tab){
+  document.getElementById('panel-create').style.display=tab==='create'?'':'none';
+  document.getElementById('panel-join').style.display=tab==='join'?'':'none';
+  document.getElementById('tab-create').className='btn '+(tab==='create'?'btn-primary':'btn-outline');
+  document.getElementById('tab-create').style.flex='1';
+  document.getElementById('tab-join').className='btn '+(tab==='join'?'btn-primary':'btn-outline');
+  document.getElementById('tab-join').style.flex='1';
+}
+window.switchTab=switchTab;
+
+function generateRoomCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
+  for(let i=0;i<4;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+async function createRoom(){
+  const name=document.getElementById('inp-name-create').value.trim();
+  if(!name){shake('inp-name-create');return}
+  whenReady(async()=>{
+    const roomCode=generateRoomCode();
+    myName=name; myTeam=''; isAdmin=true; hasJoined=true;
+    GAME_KEY='rooms/'+roomCode;
+    window._roomCode=roomCode;
+    await dbSet(GAME_KEY,{phase:'lobby',roomCode,createdAt:Date.now()});
+    document.getElementById('hdr-room-code').textContent='Rum: '+roomCode;
+    document.getElementById('hdr-room-code').style.display='';
+    document.getElementById('hdr-reset').style.display='';
+    showScreen('lobby');
+    renderLobbyControls();
+    startListening();
+  });
+}
+window.createRoom=createRoom;
+
+// Answer randomization helpers
+function cryptoRand(){
+  return crypto.getRandomValues(new Uint32Array(1))[0]/0xFFFFFFFF;
+}
+function shuffleArr(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(cryptoRand()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function randomizeAnswers(q){
+  const correctText=q.options[q.correct];
+  const shuffled=shuffleArr(q.options.slice());
+  return {...q, options:shuffled, correct:shuffled.indexOf(correctText)};
+}
 
 function toggleTeam(){
   isTeamMode=!isTeamMode;
@@ -828,35 +904,31 @@ window.adminNext=adminNext;
 
 // Hard reset – clears EVERYTHING, back to fresh lobby
 async function adminHardReset(){
-  // If not already verified as admin, ask for code
-  if(!isAdmin){
-    const code=prompt('Admin-kod:');
-    if(code!==ADMIN_CODE){alert('Fel kod!');return}
-    isAdmin=true;
-  }
+  if(!isAdmin)return; // Only admin can reset
   if(!confirm('Nollställ allt? Alla spelare, poäng och frågor raderas.'))return;
   clearTimer();
   if(unsubscribe){unsubscribe();unsubscribe=null;}
-  myAnswers={};lastPhase=null;lastQIdx=-1;hasJoined=false;
-  await dbSet(GAME_KEY,null);
-  await dbSet(GAME_KEY,{phase:'lobby'});
-  showScreen('join');
-  // Restart listening
+  myAnswers={};lastPhase=null;lastQIdx=-1;
+  await dbSet(GAME_KEY,{phase:'lobby',roomCode:window._roomCode,createdAt:Date.now()});
+  showScreen('lobby');
+  renderLobbyControls();
   startListening();
 }
 window.adminHardReset=adminHardReset;
 
 function leaveQuiz(){
-  if(!confirm('Vill du lämna quizzen och börja om?'))return;
+  if(!confirm('Vill du lämna quizzen?'))return;
   clearTimer();
+  if(unsubscribe){unsubscribe();unsubscribe=null;}
   myAnswers={};lastPhase=null;lastQIdx=-1;hasJoined=false;
-  window._selectedCat=null;
+  window._selectedCat=null; window._roomCode=null;
+  GAME_KEY='combitech-quiz-game';
   isTeamMode=false;myName='';myTeam='';isAdmin=false;
-  document.getElementById('inp-name').value='';
-  document.getElementById('inp-admin').value='';
   document.getElementById('team-toggle').classList.remove('on');
   document.getElementById('team-field').style.display='none';
   document.getElementById('hdr-reset').style.display='none';
+  document.getElementById('hdr-room-code').style.display='none';
+  switchTab('create');
   showScreen('join');
 }
 window.leaveQuiz=leaveQuiz;
@@ -866,7 +938,9 @@ function getQuestionsFromDB(category, difficulty, count) {
     console.error('questions.js not loaded!');
     return [];
   }
-  return getQuestions(category, difficulty, count);
+  const qs = getQuestions(category, difficulty, count);
+  // Randomize answer positions so correct answer isn't always same slot
+  return qs.map(q => randomizeAnswers(q));
 }
 
 async function generateWithAI(userPrompt,count,diff){
