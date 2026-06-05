@@ -516,6 +516,12 @@ async function createRoom(){
     GAME_KEY='rooms/'+roomCode;
     window._roomCode=roomCode;
     await dbSet(GAME_KEY,{phase:'lobby',roomCode,createdAt:Date.now()});
+    // Register admin as entry
+    const hue=[...myName].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
+    const color='hsl('+hue+',65%,55%)';
+    const eKey='solo_'+myName.replace(/[.#$\/\[\] ]/g,'_');
+    window._myEntryKey=eKey;
+    await dbSet(GAME_KEY+'/entries/'+eKey,{type:'solo',name:myName,score:0,color,members:[myName]});
     document.getElementById('hdr-room-code').textContent='Rum: '+roomCode;
     document.getElementById('hdr-room-code').style.display='';
     document.getElementById('hdr-reset').style.display='';
@@ -592,11 +598,19 @@ async function joinGame(){
                       'solo_'+myName.replace(/[.#$\/\[\] ]/g,'_');
     window._myEntryKey=eKey;
     const existing=await dbGet(GAME_KEY+'/entries/'+eKey);
+    const hue=[...(myTeam||myName)].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
+    const color='hsl('+hue+',65%,55%)';
     if(myTeam){
-      if(!existing){await dbSet(GAME_KEY+'/entries/'+eKey,{type:'team',name:myTeam,score:0,color,members:[myName]});}
-      else{const m=existing.members||[];if(!m.includes(myName)){m.push(myName);await dbSet(GAME_KEY+'/entries/'+eKey+'/members',m);}}
+      if(!existing){
+        await dbSet(GAME_KEY+'/entries/'+eKey,{type:'team',name:myTeam,score:0,color,members:[myName]});
+      } else {
+        const m=existing.members||[];
+        if(!m.includes(myName)){m.push(myName);await dbSet(GAME_KEY+'/entries/'+eKey+'/members',m);}
+      }
     } else {
-      if(!existing)await dbSet(GAME_KEY+'/entries/'+eKey,{type:'solo',name:myName,score:0,color,members:[myName]});
+      if(!existing){
+        await dbSet(GAME_KEY+'/entries/'+eKey,{type:'solo',name:myName,score:0,color,members:[myName]});
+      }
     }
     showScreen('lobby');renderLobbyControls();startListening();
   });
@@ -611,10 +625,17 @@ function shake(id){
 }
 
 function renderLobbyControls(){
-  document.getElementById('admin-setup').style.display=isAdmin?'':'none';
-  document.getElementById('player-wait').style.display=isAdmin?'none':'';
-  document.getElementById('lobby-admin-badge').innerHTML=isAdmin?'<span class="badge badge-admin">👑 Admin</span>':'';
+  const adminSetup=document.getElementById('admin-setup');
+  const playerWait=document.getElementById('player-wait');
+  const adminBadge=document.getElementById('lobby-admin-badge');
+  if(adminSetup) adminSetup.style.display=isAdmin?'':'none';
+  if(playerWait) playerWait.style.display=isAdmin?'none':'';
+  if(adminBadge) adminBadge.innerHTML=isAdmin?'<span class="badge badge-admin">👑 Admin</span>':'';
+  // Make sure reset button is visible for admin
+  const resetBtn=document.getElementById('hdr-reset');
+  if(resetBtn) resetBtn.style.display=isAdmin?'':'none';
 }
+window.renderLobbyControls=renderLobbyControls;
 
 function renderEntries(entries){
   const grid=document.getElementById('entry-grid');
@@ -656,14 +677,11 @@ function setPill(phase,state){
 }
 
 function handleLobby(state){
-  // If we came from wait screen, register ourselves now
-  if(hasJoined&&window._myEntryKey){
-    showScreen('lobby');renderLobbyControls();
-  } else if(hasJoined){
-    showScreen('lobby');renderLobbyControls();
+  if(hasJoined){
+    showScreen('lobby');
+    renderLobbyControls(); // Always re-render so admin panel shows correctly
   }
   renderEntries(state.entries);
-  // Show wait-admin button
   document.getElementById('wait-admin').style.display=isAdmin?'':'none';
 }
 
@@ -748,6 +766,7 @@ function renderQuestion(state,idx){
   showScreen('question');
   const q=(state.questions||[])[idx];if(!q)return;
   const total=(state.questions||[]).length;
+  window._currentTotal=total;
   const pts=pointsForQ(idx,total);
   document.getElementById('q-num').textContent=`Fråga ${idx+1} / ${total}`;
   document.getElementById('q-pts').textContent=`⭐ ${pts} p`;
@@ -832,8 +851,10 @@ function showAnswerResult(idx,chosen,q,earned){
   alert.style.display='';
   if(chosen===q.correct){
     alert.className='result-alert ok';
-    const base=pts; const bonus=earned-base;
-    alert.textContent=earned?`✅ Rätt! +${base} p${bonus>0?' + '+bonus+' p tidbonus = '+earned+' p totalt 🚀':''}`:'✅ Rätt!';
+    const total=(window._currentTotal||20);
+    const base=pointsForQ(idx,total);
+    const bonus=earned?(earned-base):0;
+    alert.textContent=earned?`✅ Rätt! +${base} p${bonus>0?' + '+bonus+' p tidbonus = '+earned+' p totalt 🚀':''}`:' ✅ Rätt!';
     spawnConfetti(30);
   } else {
     alert.className='result-alert bad';
@@ -843,18 +864,18 @@ function showAnswerResult(idx,chosen,q,earned){
 
 function renderScoreboard(entries,targetId){
   const el=document.getElementById(targetId);if(!el||!entries)return;
-  const arr=Object.values(entries).sort((a,b)=>b.score-a.score);
-  const max=arr[0]?.score||1,icons=['👑','🥈','🥉'];
+  const arr=Object.values(entries).filter(e=>e&&e.name).sort((a,b)=>(b.score||0)-(a.score||0));
+  const max=Math.max(arr[0]?.score||0,1),icons=['👑','🥈','🥉'];
   el.innerHTML=arr.map((e,i)=>{
     const isMe=e.members&&e.members.includes(myName);
     return `<div class="score-row ${i===0?'leader':''}">
       <div class="score-rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${icons[i]||i+1}</div>
       <div class="score-body">
-        <div class="score-name">${e.name}${isMe?' <span class="dim" style="font-size:.7rem">(du)</span>':''}</div>
-        <div class="score-sub">${e.type==='team'?`🏆 Lag · ${e.members?.length||1} pers`:'Solo'}</div>
-        <div class="score-bar-wrap"><div class="score-bar" style="width:${max>0?e.score/max*100:0}%"></div></div>
+        <div class="score-name">${e.name||'?'}${isMe?' <span class="dim" style="font-size:.7rem">(du)</span>':''}</div>
+        <div class="score-sub">${e.type==='team'?`🏆 Lag · ${(e.members||[]).length||1} pers`:'Solo'}</div>
+        <div class="score-bar-wrap"><div class="score-bar" style="width:${max>0?(e.score||0)/max*100:2}%"></div></div>
       </div>
-      <div class="score-pts">${e.score} p</div>
+      <div class="score-pts">${e.score||0} p</div>
     </div>`;
   }).join('');
 }
@@ -892,9 +913,14 @@ async function adminGenerate(){
     return;
   }
 
-  // Reset scores
-  const entries = await dbGet(`${GAME_KEY}/entries`);
-  if(entries){for(const key of Object.keys(entries)) await dbSet(`${GAME_KEY}/entries/${key}/score`,0)}
+  // Reset scores to 0 but keep name/type/color/members
+  const entries = await dbGet(GAME_KEY+'/entries');
+  if(entries){
+    for(const key of Object.keys(entries)){
+      const e=entries[key];
+      if(e) await dbSet(GAME_KEY+'/entries/'+key+'/score',0);
+    }
+  }
   await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
 }
 window.adminGenerate=adminGenerate;
