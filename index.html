@@ -396,6 +396,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions4.js"></script>
 <script src="questions5.js"></script>
 <script src="questions6.js"></script>
+<script src="questions7.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -520,7 +521,9 @@ window.setTimerSecs=setTimerSecs;
 async function adminSkipQuestion(){
   if(!isAdmin)return;
   clearTimer();
-  await dbUpd(GAME_KEY,{phase:'between'});
+  const state=await dbGet(GAME_KEY);
+  const timerSecs=(state.timerSecs!=null?state.timerSecs:15);
+  await dbUpd(GAME_KEY,{phase:'between',timerSecs});
 }
 window.adminSkipQuestion=adminSkipQuestion;
 
@@ -723,9 +726,14 @@ function handleLoading(state){showScreen('loading');clearTimer();document.getEle
 
 function handleQuestion(state){
   if(!hasJoined)return;
-  window._timerSecs=(state.timerSecs!=null?state.timerSecs:15);
+  // Set timer FIRST before renderQuestion reads it
+  window._timerSecs = (state.timerSecs != null ? Number(state.timerSecs) : 15);
   const qIdx=state.currentQ||0;
-  if(lastPhase!=='question'||lastQIdx!==qIdx){lastPhase='question';lastQIdx=qIdx;renderQuestion(state,qIdx);}
+  if(lastPhase!=='question'||lastQIdx!==qIdx){
+    lastPhase='question';
+    lastQIdx=qIdx;
+    renderQuestion(state,qIdx);
+  }
   // Show admin skip button
   const skipWrap=document.getElementById('admin-skip-wrap');
   if(skipWrap) skipWrap.style.display=isAdmin?'':'none';
@@ -977,8 +985,13 @@ window.adminGenerate=adminGenerate;
 async function adminNext(){
   const state=await dbGet(GAME_KEY);
   const next=(state.currentQ||0)+1;
-  if(next>=(state.questions||[]).length){await dbUpd(GAME_KEY,{phase:'final'})}
-  else{lastPhase=null;await dbUpd(GAME_KEY,{phase:'question',currentQ:next})}
+  const timerSecs=(state.timerSecs!=null?state.timerSecs:15);
+  if(next>=(state.questions||[]).length){
+    await dbUpd(GAME_KEY,{phase:'final'});
+  } else {
+    lastPhase=null;
+    await dbUpd(GAME_KEY,{phase:'question',currentQ:next,timerSecs});
+  }
 }
 window.adminNext=adminNext;
 
