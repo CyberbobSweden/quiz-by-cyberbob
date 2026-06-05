@@ -1,0 +1,20 @@
+{
+  "name": "Combitech AW Quiz",
+  "short_name": "AW Quiz",
+  "description": "Interaktiv multiplayer quiz för Combitech AW",
+  "start_url": "/quiz-by-cyberbob/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060F1A",
+  "theme_color": "#0057A8",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230057A8'/><text y='380' x='60' font-size='380'>🎯</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "sv"
+}
