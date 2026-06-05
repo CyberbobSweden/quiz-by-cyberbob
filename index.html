@@ -274,10 +274,19 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
               <button class="preset" onclick="setQCount(30)" id="qc30">30 st</button>
             </div>
           </div>
-          <div class="row mt8">
-            <button class="btn btn-gold btn-lg" onclick="adminGenerate()">✨ Generera &amp; starta quiz</button>
+          <div class="field">
+            <label>⏱️ Tid per fråga</label>
+            <div class="row">
+              <button class="preset" onclick="setTimerSecs(10)" id="ts10">10 sek</button>
+              <button class="preset active" onclick="setTimerSecs(15)" id="ts15">15 sek</button>
+              <button class="preset" onclick="setTimerSecs(20)" id="ts20">20 sek</button>
+              <button class="preset" onclick="setTimerSecs(30)" id="ts30">30 sek</button>
+              <button class="preset" onclick="setTimerSecs(0)" id="ts0">Ingen tid</button>
+            </div>
           </div>
-          <p class="mt8" style="font-size:.78rem;color:var(--muted)">AI genererar helt unika frågor varje gång – tar ca 10 sek.</p>
+          <div class="row mt8">
+            <button class="btn btn-gold btn-lg" onclick="adminGenerate()">✨ Starta quiz!</button>
+          </div>
         </div>
         <div id="player-wait" style="display:none">
           <div class="info-box mb16">⏳ Väntar på att admin skapar och startar quizzen…</div>
@@ -320,8 +329,13 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div class="options" id="options"></div>
         <div class="team-locked" id="team-locked">🔒 Ditt lag har redan svarat!</div>
         <div class="result-alert" id="result-alert"></div>
-        <div style="margin-top:16px;text-align:right">
-          <button class="btn btn-outline btn-sm" onclick="leaveQuiz()">🚪 Lämna quiz</button>
+        <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+          <div id="admin-skip-wrap" style="display:none">
+            <button class="btn btn-gold btn-sm" onclick="adminSkipQuestion()">⏭ Nästa fråga</button>
+          </div>
+          <div style="margin-left:auto">
+            <button class="btn btn-outline btn-sm" onclick="leaveQuiz()">🚪 Lämna quiz</button>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -381,6 +395,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions3.js"></script>
 <script src="questions4.js"></script>
 <script src="questions5.js"></script>
+<script src="questions6.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -412,6 +427,8 @@ const DIFF_LABELS={
   3:'svårt – riktigt knepiga frågor, expertkunskap och detaljkoll krävs'
 };
 const PRESETS=[
+  // Sport
+  {label:'🏈 Amerikansk fotboll',    cat:'🏈 Amerikansk fotboll'},
   // Musik
   {label:'🎵 80-tals musik',         cat:'🎵 80-tals musik'},
   {label:'🎶 90-tals musik',         cat:'🎶 90-tals musik'},
@@ -489,6 +506,23 @@ function setDiff(n){
   [1,2,3].forEach(v=>{document.getElementById('diff'+v)?.classList.toggle('active',v===n)});
 }
 window.setDiff=setDiff;
+
+let customTimerSecs=15;
+function setTimerSecs(n){
+  customTimerSecs=n;
+  [10,15,20,30,0].forEach(v=>{
+    const el=document.getElementById('ts'+v);
+    if(el) el.classList.toggle('active',v===n);
+  });
+}
+window.setTimerSecs=setTimerSecs;
+
+async function adminSkipQuestion(){
+  if(!isAdmin)return;
+  clearTimer();
+  await dbUpd(GAME_KEY,{phase:'between'});
+}
+window.adminSkipQuestion=adminSkipQuestion;
 
 function switchTab(tab){
   document.getElementById('panel-create').style.display=tab==='create'?'':'none';
@@ -688,10 +722,13 @@ function handleLobby(state){
 function handleLoading(state){showScreen('loading');clearTimer();document.getElementById('loading-theme').textContent=state.theme?`🎯 "${state.theme}"…`:'Skapar frågor…'}
 
 function handleQuestion(state){
-  // New player who joined during game – keep on wait screen
   if(!hasJoined)return;
+  window._timerSecs=(state.timerSecs!=null?state.timerSecs:15);
   const qIdx=state.currentQ||0;
   if(lastPhase!=='question'||lastQIdx!==qIdx){lastPhase='question';lastQIdx=qIdx;renderQuestion(state,qIdx);}
+  // Show admin skip button
+  const skipWrap=document.getElementById('admin-skip-wrap');
+  if(skipWrap) skipWrap.style.display=isAdmin?'':'none';
   renderScoreboard(state.entries,'sb-question');
   updateAnsweredCount(state,qIdx);
   checkTeamLock(state,qIdx);
@@ -797,17 +834,28 @@ function updateAnsweredCount(state,idx){
 }
 
 function startTimer(idx,pts){
-  clearTimer();timerLeft=TIMER_SECS;updateTimerUI(timerLeft);
+  const secs=window._timerSecs||15;
+  if(secs===0){
+    // No timer – hide bar, don't auto-advance
+    const bar=document.getElementById('timer-bar');
+    if(bar){bar.parentElement.parentElement.style.display='none';}
+    document.getElementById('timer-num').textContent='∞';
+    return;
+  }
+  const barWrap=document.getElementById('timer-bar');
+  if(barWrap){barWrap.parentElement.parentElement.style.display='';}
+  clearTimer();timerLeft=secs;updateTimerUI(timerLeft);
   timerIv=setInterval(async()=>{
     timerLeft--;updateTimerUI(timerLeft);
-    if(timerLeft<=0){clearTimer();if(isAdmin)setTimeout(async()=>{await dbUpd(GAME_KEY,{phase:'between'})},1500)}
+    if(timerLeft<=0){clearTimer();if(isAdmin)setTimeout(async()=>{await dbUpd(GAME_KEY,{phase:'between'})},1200)}
   },1000);
 }
 function clearTimer(){clearInterval(timerIv);timerIv=null}
 function updateTimerUI(t){
   const bar=document.getElementById('timer-bar'),num=document.getElementById('timer-num');
   if(!bar)return;
-  bar.style.width=(t/TIMER_SECS*100)+'%';
+  const secs=window._timerSecs||15;
+  bar.style.width=(secs>0?t/secs*100:100)+'%';
   if(t<=5)bar.classList.add('warn');else bar.classList.remove('warn');
   num.textContent=Math.max(0,t);
 }
@@ -825,7 +873,8 @@ async function chooseAnswer(optIdx){
   if(existing){showTeamLocked(existing.by,existing.chosen,existing.correct,q);return}
   let earned=0;
   if(correct){
-    const bonus=Math.round((timerLeft/TIMER_SECS)*pts*0.5);
+    const tSecs=window._timerSecs||15;
+    const bonus=tSecs>0?Math.round((timerLeft/tSecs)*pts*0.5):0;
     earned=pts+bonus;
     const cur=(await dbGet(`${GAME_KEY}/entries/${eKey}/score`))||0;
     await dbSet(`${GAME_KEY}/entries/${eKey}/score`,cur+earned);
@@ -903,7 +952,7 @@ async function adminGenerate(){
     return;
   }
   const savedEntries = await dbGet(`${GAME_KEY}/entries`);
-  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null,difficulty,qCount});
+  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null,difficulty,qCount,timerSecs:customTimerSecs});
 
   // Get questions from local DB with correct count and difficulty
   const questions = getQuestionsFromDB(cat, difficulty, qCount);
