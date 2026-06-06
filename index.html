@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="AW Quiz">
 <meta name="theme-color" content="#0057A8">
 <meta name="description" content="Combitech AW Quiz – multiplayer quiz i realtid">
+<meta name="version" content="v3.0-multicat">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230057A8'/><text y='380' x='60' font-size='380'>🎯</text></svg>">
 <title>Combitech Umeå – AW Quiz</title>
@@ -505,6 +506,8 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions9.js"></script>
 <script src="questions10.js"></script>
 <script src="questions11.js"></script>
+<script src="questions12.js"></script>
+<script src="questions13.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -597,34 +600,47 @@ function dbListen(p,cb){return window._onValue(dbRef(p),s=>cb(s.val()))}
   }
 })();
 
-// Presets – multi-select
-window._selectedCats = []; // Array of selected cats
-(function(){
-  const g=document.getElementById('preset-grid');
-  PRESETS.forEach(p=>{
-    const b=document.createElement('button');b.className='preset';b.textContent=p.label;
-    b.onclick=()=>{
-      const idx = window._selectedCats.indexOf(p.cat);
-      if(idx>=0){
-        window._selectedCats.splice(idx,1);
+// Presets – multi-select (v3)
+window._selectedCats = [];
+function buildPresetGrid(){
+  const g = document.getElementById('preset-grid');
+  if(!g) return;
+  g.innerHTML = '';
+  PRESETS.forEach(function(p){
+    const b = document.createElement('button');
+    b.className = 'preset';
+    b.textContent = p.label;
+    b.setAttribute('data-cat', p.cat);
+    b.addEventListener('click', function(){
+      const cat = p.cat;
+      const idx = window._selectedCats.indexOf(cat);
+      if(idx >= 0){
+        window._selectedCats.splice(idx, 1);
         b.classList.remove('active');
       } else {
-        window._selectedCats.push(p.cat);
+        window._selectedCats.push(cat);
         b.classList.add('active');
       }
-      // Also keep legacy _selectedCat for compat
-      window._selectedCat = window._selectedCats.length===1 ? window._selectedCats[0] : (window._selectedCats.length>1 ? 'multi' : null);
-      document.getElementById('cat-warning').style.display=window._selectedCats.length?'none':'';
-      // Update summary
+      const warn = document.getElementById('cat-warning');
+      if(warn) warn.style.display = window._selectedCats.length ? 'none' : '';
       const sum = document.getElementById('cat-summary');
-      if(window._selectedCats.length>1){
-        sum.style.display='';
-        sum.textContent='✅ Mixar '+window._selectedCats.length+' kategorier – '+window._selectedCats.length*30+'+ frågor i poolen';
-      } else { sum.style.display='none'; }
-    };
+      if(sum){
+        if(window._selectedCats.length > 1){
+          sum.style.display = '';
+          sum.textContent = '✅ Mixar ' + window._selectedCats.length + ' kategorier!';
+        } else if(window._selectedCats.length === 1){
+          sum.style.display = '';
+          sum.textContent = '✅ ' + p.label + ' vald';
+        } else {
+          sum.style.display = 'none';
+        }
+      }
+    });
     g.appendChild(b);
   });
-})();
+}
+// Build when DOM ready and also when lobby screen shown
+buildPresetGrid();
 
 function setQCount(n){qCount=n;[10,20,30].forEach(v=>document.getElementById('qc'+v)?.classList.toggle('active',v===n))}
 window.setQCount=setQCount;
@@ -790,6 +806,9 @@ function shake(id){
 }
 
 function renderLobbyControls(){
+  // Rebuild preset grid if empty (handles screen switching)
+  const g = document.getElementById('preset-grid');
+  if(g && g.children.length === 0) buildPresetGrid();
   const adminSetup=document.getElementById('admin-setup');
   const playerWait=document.getElementById('player-wait');
   const adminBadge=document.getElementById('lobby-admin-badge');
@@ -1528,7 +1547,7 @@ function spawnConfetti(n=40){
 }
 </script>
 <div style="position:fixed;bottom:8px;right:12px;font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;pointer-events:none;z-index:999">
-  v2026.06.06-06f8dc5
+  v2026.06.06-9a8af72
 </div>
 <!-- Toast notifications -->
 <div id="toast-container" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:600;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none"></div>
