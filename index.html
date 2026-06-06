@@ -38,38 +38,71 @@ header{display:flex;align-items:center;gap:16px;padding:14px 28px;background:rgb
 @keyframes blink{50%{opacity:0}}
 /* ADMIN RESET BUTTON – always visible */
 #hdr-reset{display:inline-flex}
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px 48px;gap:16px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 14px 40px;gap:14px}
 .screen{display:none;width:100%;max-width:820px}
 .screen.active{display:block;animation:revealUp .35s cubic-bezier(.22,1,.36,1)}
 @keyframes revealUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--radius);padding:36px 40px;box-shadow:var(--shadow)}
 .card+.card{margin-top:14px}
-/* ── Better responsive ── */
-@media(max-width:600px){
-  .card{padding:20px 16px}
-  header{padding:10px 14px}
-  .logo-mark{width:34px;height:34px;font-size:1rem}
-  .logo-main{font-size:.82rem}
-  .logo-sub{font-size:.6rem}
-  #hdr-reset{padding:6px 10px;font-size:.72rem}
-  h1{font-size:1.5rem}
-  h2{font-size:1.2rem}
-  .diff-grid{grid-template-columns:1fr 1fr 1fr;gap:6px}
-  .diff-btn{padding:8px 4px;font-size:.72rem}
-  .diff-btn .diff-icon{font-size:1.1rem}
-  .btn-lg{padding:13px 20px;font-size:.88rem}
-  .btn{padding:11px 18px;font-size:.85rem}
-  .preset{padding:6px 10px;font-size:.75rem}
-  .opt{padding:13px 14px;font-size:.9rem}
-  .q-text{font-size:1.1rem}
-  .hdr-room-code{font-size:.7rem!important;padding:4px 10px!important}
-  main{padding:16px 10px 40px}
-  .score-row{padding:9px 12px}
+/* ── Responsive – mobile first ── */
+/* Tablet */
+@media(max-width:860px){
+  .screen{max-width:100%}
+  .card{padding:28px 24px}
 }
-@media(max-width:380px){
+/* Mobile */
+@media(max-width:600px){
+  header{padding:8px 12px;gap:8px}
+  .logo-mark{width:30px;height:30px;font-size:.9rem}
+  .logo-main{font-size:.78rem}
+  .logo-sub{display:none}
+  .hdr-right{gap:6px}
+  #hdr-reset{padding:5px 10px;font-size:.72rem}
+  #btn-qr{padding:5px 10px;font-size:.72rem}
+  #btn-install{padding:5px 10px;font-size:.72rem}
+  .hdr-pill{padding:4px 10px;font-size:.7rem}
+  main{padding:12px 8px 32px;justify-content:flex-start}
+  .screen{max-width:100%}
+  .card{padding:18px 14px;border-radius:12px}
+  .card+.card{margin-top:10px}
+  h1{font-size:1.35rem!important;line-height:1.2}
+  h2{font-size:1.1rem!important}
+  h3{font-size:.9rem!important}
+  p{font-size:.88rem}
+  .btn{padding:11px 16px;font-size:.84rem}
+  .btn-lg{padding:13px 18px;font-size:.9rem}
+  .btn-sm{padding:7px 12px;font-size:.75rem}
+  .diff-grid{gap:6px}
+  .diff-btn{padding:8px 4px;font-size:.7rem}
+  .diff-btn .diff-icon{font-size:1.1rem}
+  .preset{padding:6px 10px;font-size:.75rem}
+  .preset-grid{gap:6px}
+  .opt{padding:12px 12px;font-size:.88rem;gap:10px}
+  .opt-key{min-width:28px;height:28px;font-size:.78rem}
+  .q-text{font-size:1rem!important;margin-bottom:18px}
+  .q-cat{font-size:.65rem}
+  .timer-wrap{margin-bottom:14px}
+  .score-row{padding:8px 10px}
+  .score-name{font-size:.84rem}
+  .score-pts{font-size:.88rem}
+  .entry-chip{padding:6px 10px;font-size:.8rem}
+  .field{margin-bottom:12px}
+  label{font-size:.74rem}
+  input[type=text]{padding:11px 13px;font-size:.9rem}
+  hr{margin:16px 0}
+  .row{gap:7px}
+  .toggle-label{font-size:.84rem}
+}
+/* Small mobile */
+@media(max-width:390px){
+  .card{padding:14px 12px}
+  h1{font-size:1.2rem!important}
   .options{grid-template-columns:1fr}
-  .card{padding:16px 12px}
   .preset{padding:5px 8px;font-size:.7rem}
+  .opt{padding:11px 10px;font-size:.84rem}
+  .btn-lg{font-size:.84rem;padding:12px 14px}
+  .hdr-room-code{font-size:.65rem!important;padding:3px 8px!important;letter-spacing:.05em!important}
+  .logo-main{font-size:.72rem}
 }
 
 /* ── QR Modal ── */
@@ -114,7 +147,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 /* ── Safe area for notch phones ── */
 body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
-h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;line-height:1.1}
+h1{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;line-height:1.15}
 h2{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:700}
 h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
 p{color:var(--muted);line-height:1.65}
@@ -267,9 +300,9 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <hr>
 
         <!-- TAB SWITCHER -->
-        <div class="row mb16" style="gap:8px">
-          <button class="btn btn-primary" id="tab-create" onclick="switchTab('create')" style="flex:1">➕ Skapa rum</button>
-          <button class="btn btn-outline" id="tab-join" onclick="switchTab('join')" style="flex:1">🚪 Gå med</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+          <button class="btn btn-primary" id="tab-create" onclick="switchTab('create')">➕ Skapa rum</button>
+          <button class="btn btn-outline" id="tab-join" onclick="switchTab('join')">🚪 Gå med</button>
         </div>
 
         <!-- CREATE ROOM -->
@@ -534,6 +567,35 @@ const GEMINI_KEY = '%%GEMINI_KEY%%';
 // Inget statiskt admin-lösenord – admin är den som skapar rummet!
 const TIMER_SECS=15;
 let GAME_KEY='combitech-quiz-game'; // uppdateras med rumskod
+
+// ── Fråghistorik – undvik upprepning ─────────────────────────────────────
+// Sparar de senaste frågorna som visats, per kategori
+// Max 200 frågor ihåg per kategori (eller 60% av poolen, vilket är störst)
+window._usedQuestions = {}; // { cat: Set(questionTexts) }
+const MAX_HISTORY_PER_CAT = 200;
+
+function markQuestionsUsed(questions) {
+  if (!questions) return;
+  questions.forEach(q => {
+    const cat = q.category || 'mix';
+    if (!window._usedQuestions[cat]) window._usedQuestions[cat] = new Set();
+    window._usedQuestions[cat].add(q.question.toLowerCase().trim());
+  });
+}
+
+function filterUsedQuestions(pool, cat) {
+  const used = window._usedQuestions[cat];
+  if (!used || used.size === 0) return pool;
+  // Filter out used, but if < 30% remain, reset history for this cat
+  const fresh = pool.filter(q => !used.has((q.question||q.q||'').toLowerCase().trim()));
+  const threshold = Math.max(20, Math.floor(pool.length * 0.3));
+  if (fresh.length < threshold) {
+    console.log('Resetting question history for:', cat);
+    window._usedQuestions[cat] = new Set();
+    return pool;
+  }
+  return fresh;
+}
 const DIFF_LABELS={
   1:'lätt – nybörjarvänliga frågor, välkända fakta som de flesta känner till',
   2:'medel – lagom utmanande, kräver lite koll på ämnet',
@@ -885,6 +947,10 @@ function handleLoading(state){showScreen('loading');clearTimer();document.getEle
 
 function handleQuestion(state){
   if(!hasJoined)return;
+  // Track used questions on all clients too
+  if(state.questions && lastPhase !== 'question') {
+    markQuestionsUsed(state.questions);
+  }
   // Set timer FIRST before renderQuestion reads it
   window._timerSecs = (state.timerSecs != null ? Number(state.timerSecs) : 15);
   const qIdx=state.currentQ||0;
@@ -1182,6 +1248,9 @@ async function adminGenerate(){
     }
   }
 
+  // Mark these questions as used so they don't repeat soon
+  markQuestionsUsed(questions);
+
   await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
   showToast('🎯 Quiz startar med '+questions.length+' frågor!','ok',2500);
 }
@@ -1210,6 +1279,8 @@ async function adminHardReset(){
   // Clear category selection
   window._selectedCat=null; window._selectedCats=[];
   document.querySelectorAll('.preset-grid .preset').forEach(x=>x.classList.remove('active'));
+  // Optionally clear question history on full reset
+  // window._usedQuestions = {};
   const sum=document.getElementById('cat-summary');if(sum)sum.style.display='none';
   await dbSet(GAME_KEY,{phase:'lobby',roomCode:window._roomCode,createdAt:Date.now()});
   showScreen('lobby');
@@ -1490,8 +1561,34 @@ function getQuestionsFromDB(category, difficulty, count) {
     console.error('questions.js not loaded!');
     return [];
   }
-  const qs = getQuestions(category, difficulty, count);
-  return qs.map(q => randomizeAnswers(q));
+  // Get a larger pool first, then filter used questions
+  const poolSize = Math.min(count * 4, 999);
+  const allCats = category === 'mix' ? Object.keys(QUESTION_DB) : [category];
+
+  // Build pool for all requested categories
+  let pool = [];
+  allCats.forEach(cat => {
+    const catPool = getQuestions(cat, difficulty, poolSize);
+    // Filter out recently used questions
+    const fresh = filterUsedQuestions(catPool, cat);
+    pool = pool.concat(fresh);
+  });
+
+  // If still too few after filtering (very small category), fall back to unfiltered
+  if (pool.length < count) {
+    pool = [];
+    allCats.forEach(cat => {
+      pool = pool.concat(getQuestions(cat, difficulty, poolSize));
+    });
+  }
+
+  // Shuffle and pick
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const picked = pool.slice(0, count);
+  return picked.map(q => randomizeAnswers(q));
 }
 
 async function generateWithAI(userPrompt,count,diff){
