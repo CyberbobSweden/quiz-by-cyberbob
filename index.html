@@ -214,6 +214,25 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .conf-piece{position:absolute;top:-12px;border-radius:2px;animation:confDrop linear forwards}
 @keyframes confDrop{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
 @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes bounceIn{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+/* Toast */
+.toast{background:var(--surf);border:1px solid var(--border);border-radius:999px;padding:10px 22px;font-size:.88rem;font-weight:700;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.toast.ok{border-color:rgba(39,217,143,.4);color:var(--correct)}
+.toast.bad{border-color:rgba(240,91,91,.4);color:var(--wrong)}
+.toast.info{border-color:rgba(26,130,255,.4);color:#7EC5FF}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(8px)}}
+/* Stat chips */
+.stat-chip{background:var(--surf2);border:1px solid var(--border);border-radius:var(--rad-sm);padding:8px 14px;font-size:.82rem;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.stat-chip .val{color:var(--text);font-family:'Syne',sans-serif;font-size:1rem}
+/* All-time board */
+.alltime-row{display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:var(--rad-sm);background:var(--surf2);border:1px solid var(--border);margin-bottom:6px}
+.alltime-rank{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;width:22px;color:var(--muted)}
+.alltime-name{flex:1;font-weight:700;font-size:.88rem}
+.alltime-pts{font-family:'Syne',sans-serif;font-weight:800;color:var(--gold);font-size:.9rem}
+/* Highscore new record */
+.new-record{animation:recordPop .5s cubic-bezier(.22,1,.36,1)}
+@keyframes recordPop{0%{transform:scale(.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -417,9 +436,18 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
     <!-- BETWEEN -->
     <div class="screen" id="screen-between">
       <div class="card">
-        <div class="row mb16">
+        <div class="row mb8">
           <h2>⏸ Ställning</h2>
           <span class="badge badge-blue" id="between-label"></span>
+        </div>
+        <!-- Question stats -->
+        <div id="q-stats-box" style="margin-bottom:16px;display:none">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+            <div class="stat-chip" id="stat-correct"></div>
+            <div class="stat-chip" id="stat-fastest"></div>
+            <div class="stat-chip" id="stat-pct"></div>
+          </div>
+          <div id="stat-answer-reveal"></div>
         </div>
         <div class="scoreboard" id="sb-between"></div>
         <hr>
@@ -427,7 +455,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
           <button class="btn btn-primary btn-lg btn-block" id="btn-next" onclick="adminNext()">Nästa fråga →</button>
         </div>
         <div id="between-wait" style="display:none">
-          <p class="dim" style="font-size:.85rem">⏳ Väntar på att admin går vidare…</p>
+          <p class="dim tc" style="font-size:.85rem">⏳ Väntar på att admin går vidare…</p>
         </div>
       </div>
     </div>
@@ -435,18 +463,24 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
     <!-- FINAL -->
     <div class="screen" id="screen-final">
       <div class="card tc">
-        <div style="font-size:3.5rem">🏆</div>
-        <h1 class="mt8">Quiz klar!</h1>
+        <div id="final-fireworks" style="font-size:3.5rem;animation:bounceIn .6s cubic-bezier(.22,1,.36,1)">🏆</div>
+        <h1 class="mt8" style="background:linear-gradient(135deg,var(--gold),var(--blue-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Quiz klar!</h1>
         <p class="mt8">Grym kväll på Combitech Umeå! 🎸🍺</p>
         <div class="podium" id="final-podium"></div>
+        <div id="final-highscore-box" style="margin:12px 0;display:none">
+          <div class="info-box" id="final-highscore-msg"></div>
+        </div>
         <hr>
-        <h3 class="mb16">Fullständig ställning</h3>
+        <h3 class="mb8">🏆 Fullständig ställning</h3>
         <div class="scoreboard" id="sb-final"></div>
         <hr>
-        <div class="row" style="justify-content:center">
+        <h3 class="mb8" id="alltime-heading" style="display:none">⭐ All-time topplista</h3>
+        <div class="scoreboard" id="sb-alltime" style="margin-bottom:16px"></div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
           <div id="final-admin-btn" style="display:none">
             <button class="btn btn-gold btn-lg" onclick="adminHardReset()">🎉 Starta ny quiz</button>
           </div>
+          <button class="btn btn-outline" onclick="shareResult()">📤 Dela resultat</button>
           <div id="final-player-msg" style="display:none">
             <p class="dim" style="font-size:.85rem">⏳ Väntar på att admin startar en ny quiz…</p>
           </div>
@@ -465,6 +499,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions6.js"></script>
 <script src="questions7.js"></script>
 <script src="questions8.js"></script>
+<script src="questions9.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -526,6 +561,11 @@ const PRESETS=[
   {label:'🏙️ Umeå & Norrland',      cat:'🏙️ Umeå & Norrland'},
   {label:'🎭 Allmänkultur & Käpphäst', cat:'🎭 Allmänkultur & Käpphäst'},
   {label:'🌈 Blandat / Mix',         cat:'mix'},
+  // Nya kategorier
+  {label:'🕺 70-tals musik',          cat:'🕺 70-tals musik'},
+  {label:'🎤 K-pop',                  cat:'🎤 K-pop & Asiatisk musik'},
+  {label:'🌌 Astronomi & Rymden',     cat:'🌌 Astronomi & Rymden'},
+  {label:'🍹 Alkohol & Drinkar',      cat:'🍹 Alkohol & Drinkar'},
 ];
 
 let myName='',myTeam='',isAdmin=false,isTeamMode=false;
@@ -743,11 +783,21 @@ function renderLobbyControls(){
 }
 window.renderLobbyControls=renderLobbyControls;
 
+let _lastEntryCount = 0;
 function renderEntries(entries){
   const grid=document.getElementById('entry-grid');
   const badge=document.getElementById('lobby-count');
-  if(!entries){grid.innerHTML='';badge.textContent='0 inne';return}
+  if(!entries){grid.innerHTML='';badge.textContent='0 inne';_lastEntryCount=0;return}
   const arr=Object.values(entries);
+  // Toast when new player joins
+  if(arr.length > _lastEntryCount && _lastEntryCount > 0) {
+    const newest = arr[arr.length-1];
+    if(newest&&newest.name&&newest.name!==myName) {
+      showToast('👋 '+newest.name+' gick med!','info',2500);
+      SFX.join();
+    }
+  }
+  _lastEntryCount = arr.length;
   badge.textContent=arr.length+' inne';
   grid.innerHTML=arr.map(e=>{
     const isMe=e.members&&e.members.includes(myName);
@@ -849,6 +899,7 @@ function handleBetween(state){
   const qIdx=state.currentQ||0;
   document.getElementById('between-label').textContent=`efter fråga ${qIdx+1}`;
   renderScoreboard(state.entries,'sb-between');
+  showQuestionStats(state, qIdx);
   const nextIdx=qIdx+1,total=(state.questions||[]).length;
   if(isAdmin){
     document.getElementById('between-admin').style.display='';
@@ -860,10 +911,32 @@ function handleBetween(state){
   }
 }
 
-function handleFinal(state){
-  clearTimer();showScreen('final');spawnConfetti(150);renderFinal(state.entries);
+async function handleFinal(state){
+  if(lastPhase==='final')return;
+  lastPhase='final';clearTimer();showScreen('final');
+  spawnConfetti(150);
+  SFX.fanfare();
+  renderFinal(state.entries);
   document.getElementById('final-admin-btn').style.display=isAdmin?'':'none';
   document.getElementById('final-player-msg').style.display=isAdmin?'none':'';
+  // Check my rank
+  if(state.entries) {
+    const arr = Object.values(state.entries).filter(e=>e&&e.name).sort((a,b)=>(b.score||0)-(a.score||0));
+    const myRank = arr.findIndex(e=>e.members&&e.members.includes(myName));
+    if(myRank===0) setTimeout(()=>showToast('🥇 Du vann! Grattis!','ok',5000),800);
+    else if(myRank===1) setTimeout(()=>showToast('🥈 Andraplats – bra jobbat!','info',4000),800);
+    else if(myRank===2) setTimeout(()=>showToast('🥉 Tredjeplacering!','info',4000),800);
+  }
+  // Save & show highscores
+  if(isAdmin){
+    const newRecord = await saveHighscores(state.entries);
+    if(newRecord){
+      showToast('🏆 Nytt rekord sparat!','ok',4000);
+      document.getElementById('final-fireworks').textContent='🎉';
+    }
+  }
+  const scores = await loadHighscores();
+  renderAlltime(scores);
 }
 
 function pointsForQ(idx, total) {
@@ -925,6 +998,8 @@ function startTimer(idx,pts){
   timerIv=setInterval(async()=>{
     timerLeft--;updateTimerUI(timerLeft);
     if(timerLeft<=0){clearTimer();if(isAdmin)setTimeout(async()=>{await dbUpd(GAME_KEY,{phase:'between'})},1200)}
+    else if(timerLeft<=3){SFX.countdown();}
+    else if(timerLeft<=5){SFX.tick();}
   },1000);
 }
 function clearTimer(){clearInterval(timerIv);timerIv=null}
@@ -956,7 +1031,7 @@ async function chooseAnswer(optIdx){
     const cur=(await dbGet(`${GAME_KEY}/entries/${eKey}/score`))||0;
     await dbSet(`${GAME_KEY}/entries/${eKey}/score`,cur+earned);
   }
-  await dbSet(`${GAME_KEY}/answers/${ansKey}/${idx}`,{chosen:optIdx,correct,pts:earned,by:myName});
+  await dbSet(`${GAME_KEY}/answers/${ansKey}/${idx}`,{chosen:optIdx,correct,pts:earned,by:myTeam||myName,timeLeft:timerLeft});
   showAnswerResult(idx,optIdx,q,earned);
   if(isAdmin){
     const entries=Object.values(state.entries||{});
@@ -982,9 +1057,11 @@ function showAnswerResult(idx,chosen,q,earned){
     const bonus=earned?(earned-base):0;
     alert.textContent=earned?`✅ Rätt! +${base} p${bonus>0?' + '+bonus+' p tidbonus = '+earned+' p totalt 🚀':''}`:' ✅ Rätt!';
     spawnConfetti(30);
+    SFX.correct();
   } else {
     alert.className='result-alert bad';
     alert.textContent=`❌ Fel! Rätt svar: "${q.options[q.correct]}"`;
+    SFX.wrong();
   }
 }
 
@@ -1144,7 +1221,6 @@ window.closeQR = closeQR;
   const params = new URLSearchParams(window.location.search);
   const room = params.get('room');
   if(room){
-    // Switch to join tab and fill room code
     setTimeout(()=>{
       switchTab('join');
       const inp = document.getElementById('inp-room');
@@ -1152,6 +1228,163 @@ window.closeQR = closeQR;
     }, 100);
   }
 })();
+
+// ── SOUND ENGINE ──────────────────────────────────────────────────────────
+const SFX = {
+  _ctx: null,
+  _get() {
+    if(!this._ctx) this._ctx = new (window.AudioContext||window.webkitAudioContext)();
+    return this._ctx;
+  },
+  _tone(freq, dur, type='sine', vol=0.3) {
+    try {
+      const ctx = this._get();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + dur);
+    } catch(e) {}
+  },
+  correct() {
+    this._tone(523, 0.1, 'sine', 0.25);
+    setTimeout(()=>this._tone(659, 0.1, 'sine', 0.2), 100);
+    setTimeout(()=>this._tone(784, 0.2, 'sine', 0.2), 200);
+  },
+  wrong() {
+    this._tone(300, 0.1, 'sawtooth', 0.2);
+    setTimeout(()=>this._tone(200, 0.2, 'sawtooth', 0.15), 100);
+  },
+  tick() { this._tone(880, 0.05, 'square', 0.05); },
+  fanfare() {
+    [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(f,0.3,'sine',0.3),i*100));
+    setTimeout(()=>{ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(f,0.5,'sine',0.25),i*100)); }, 500);
+  },
+  join() { this._tone(440, 0.08, 'sine', 0.15); setTimeout(()=>this._tone(550, 0.12, 'sine', 0.12), 80); },
+  countdown() { this._tone(660, 0.06, 'square', 0.1); }
+};
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function showToast(msg, type='info', dur=2800) {
+  const tc = document.getElementById('toast-container');
+  if(!tc) return;
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(()=>{
+    t.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(()=>t.remove(), 300);
+  }, dur);
+}
+
+// ── HIGHSCORE (Firebase) ───────────────────────────────────────────────────
+const HS_KEY = 'highscores/all_time';
+async function saveHighscores(entries) {
+  if(!entries) return;
+  const arr = Object.values(entries).filter(e=>e&&e.name&&(e.score||0)>0)
+                .sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,10);
+  if(!arr.length) return;
+  const existing = await dbGet(HS_KEY) || {};
+  let newRecord = false;
+  arr.forEach(e=>{
+    const key = e.name.replace(/[.#$\/\[\] ]/g,'_');
+    if(!existing[key] || (e.score||0) > (existing[key].score||0)) {
+      existing[key] = {name:e.name, score:e.score||0, date:Date.now()};
+      if((e.score||0)>0) newRecord = true;
+    }
+  });
+  await dbSet(HS_KEY, existing);
+  return newRecord;
+}
+
+async function loadHighscores() {
+  const data = await dbGet(HS_KEY);
+  if(!data) return [];
+  return Object.values(data).sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,10);
+}
+
+function renderAlltime(scores) {
+  const el = document.getElementById('sb-alltime');
+  const heading = document.getElementById('alltime-heading');
+  if(!el||!scores.length) return;
+  if(heading) heading.style.display='';
+  const icons = ['🥇','🥈','🥉'];
+  el.innerHTML = scores.map((s,i)=>`
+    <div class="alltime-row">
+      <div class="alltime-rank">${icons[i]||'#'+(i+1)}</div>
+      <div class="alltime-name">${s.name||'?'}</div>
+      <div class="alltime-pts">${s.score||0} p</div>
+    </div>`).join('');
+}
+
+// ── QUESTION STATS ────────────────────────────────────────────────────────
+function showQuestionStats(state, qIdx) {
+  const box = document.getElementById('q-stats-box');
+  if(!box) return;
+  const q = (state.questions||[])[qIdx];
+  if(!q) return;
+  const answers = state.answers || {};
+  const entries = Object.values(state.entries||{});
+
+  // Count correct answers
+  let correctCount=0, fastest=null, fastestTime=99999;
+  Object.entries(answers).forEach(([key, ans])=>{
+    const a = ans[qIdx];
+    if(!a) return;
+    if(a.correct) {
+      correctCount++;
+      if((a.timeLeft||0) > (fastest?fastest.timeLeft||0:0)) {
+        fastest = a;
+      }
+    }
+  });
+  const total = entries.length;
+  const pct = total>0 ? Math.round(correctCount/total*100) : 0;
+
+  document.getElementById('stat-correct').innerHTML =
+    `✅ <span class="val">${correctCount}/${total}</span> rätt`;
+  document.getElementById('stat-pct').innerHTML =
+    `📊 <span class="val">${pct}%</span> andel rätt`;
+  if(fastest) {
+    document.getElementById('stat-fastest').innerHTML =
+      `⚡ Snabbast: <span class="val">${fastest.by}</span>`;
+  } else {
+    document.getElementById('stat-fastest').innerHTML = `❌ Ingen fick rätt`;
+  }
+
+  // Show correct answer
+  const revealEl = document.getElementById('stat-answer-reveal');
+  if(revealEl && q.options) {
+    revealEl.innerHTML = `<div class="info-box" style="margin-top:8px">
+      ✅ Rätt svar: <strong>${q.options[q.correct]}</strong>
+    </div>`;
+  }
+  box.style.display='';
+}
+
+// ── SHARE RESULT ──────────────────────────────────────────────────────────
+function shareResult() {
+  const sb = document.getElementById('sb-final');
+  if(!sb) return;
+  const rows = Array.from(sb.querySelectorAll('.score-row'));
+  const text = rows.slice(0,3).map((r,i)=>{
+    const name = r.querySelector('.score-name')?.textContent?.trim()||'?';
+    const pts = r.querySelector('.score-pts')?.textContent?.trim()||'?';
+    return `${['🥇','🥈','🥉'][i]} ${name} – ${pts}`;
+  }).join('\n');
+  const msg = `🎯 Combitech AW Quiz Resultat!\n${text}\n\nSpela på: ${window.location.href}`;
+  if(navigator.share) {
+    navigator.share({title:'AW Quiz', text:msg}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(msg).then(()=>showToast('📋 Kopierat!','ok'));
+  }
+}
+window.shareResult = shareResult;
 
 function leaveQuiz(){
   if(!confirm('Vill du lämna quizzen?'))return;
@@ -1256,6 +1489,9 @@ function spawnConfetti(n=40){
 <div style="position:fixed;bottom:8px;right:12px;font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;pointer-events:none;z-index:999">
   v%%VERSION%%
 </div>
+<!-- Toast notifications -->
+<div id="toast-container" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:600;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none"></div>
+
 <!-- QR Modal -->
 <div id="qr-modal" onclick="if(event.target===this)closeQR()">
   <div id="qr-box">

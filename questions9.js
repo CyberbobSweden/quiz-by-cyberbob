@@ -1,0 +1,153 @@
+// questions9.js – Nya kategorier: 70-tal, K-pop, Anime, True Crime, Astronomi, Drinkar
+const QUESTION_DB9 = {
+
+"🕺 70-tals musik": [
+  {q:"Vilket band sjöng 'Bohemian Rhapsody'?",o:["Led Zeppelin","The Beatles","Queen","Rolling Stones"],a:2,d:1},
+  {q:"Vilket band sjöng 'Hotel California'?",o:["Fleetwood Mac","Eagles","Dire Straits","The Doors"],a:1,d:1},
+  {q:"Vem sjunger 'Rocket Man'?",o:["David Bowie","Rod Stewart","Elton John","Billy Joel"],a:2,d:1},
+  {q:"Vilket band sjöng 'Stairway to Heaven'?",o:["Deep Purple","Black Sabbath","Led Zeppelin","Uriah Heep"],a:2,d:1},
+  {q:"Vem sjunger 'Dancing Queen'?",o:["Donna Summer","Diana Ross","ABBA","Gloria Gaynor"],a:2,d:1},
+  {q:"Vilket band sjöng 'Smoke on the Water'?",o:["Led Zeppelin","Black Sabbath","Deep Purple","Uriah Heep"],a:2,d:1},
+  {q:"Vem sjunger 'Le Freak'?",o:["Earth Wind & Fire","Chic","Kool & the Gang","Parliament"],a:1,d:1},
+  {q:"Vilket band sjöng 'Born to Run'?",o:["Tom Petty","Bruce Springsteen","John Mellencamp","Bob Seger"],a:1,d:1},
+  {q:"Vem sjunger 'I Will Survive'?",o:["Donna Summer","Gloria Gaynor","Diana Ross","Tina Turner"],a:1,d:1},
+  {q:"Vilket band sjöng 'Superstition'?",o:["Earth Wind & Fire","Stevie Wonder","Marvin Gaye","Curtis Mayfield"],a:1,d:1},
+  {q:"Vilket år kom ABBA-låten 'Waterloo'?",o:["1972","1974","1976","1978"],a:1,d:2},
+  {q:"Vem sjunger 'Stayin' Alive'?",o:["Earth Wind & Fire","KC and the Sunshine Band","Bee Gees","Chic"],a:2,d:1},
+  {q:"Vilket band sjöng 'More Than a Feeling'?",o:["Journey","Foreigner","Boston","REO Speedwagon"],a:2,d:1},
+  {q:"Vem sjunger 'Piano Man'?",o:["Elton John","Billy Joel","James Taylor","Carole King"],a:1,d:1},
+  {q:"Vilket år kom Pink Floyds 'Dark Side of the Moon'?",o:["1971","1973","1975","1977"],a:1,d:2},
+  {q:"Vem sjunger 'Jolene'?",o:["Loretta Lynn","Tammy Wynette","Dolly Parton","Emmylou Harris"],a:2,d:1},
+  {q:"Vilket band sjöng 'Night Fever'?",o:["Earth Wind & Fire","Bee Gees","Chic","Kool & the Gang"],a:1,d:2},
+  {q:"Vem sjunger 'Maggie May'?",o:["Mick Jagger","Rod Stewart","Joe Cocker","Eric Clapton"],a:1,d:1},
+  {q:"Vilket band sjöng 'Sultans of Swing'?",o:["The Police","Dire Straits","U2","Fleetwood Mac"],a:1,d:2},
+  {q:"Vilket år kom David Bowies 'Heroes'?",o:["1975","1977","1979","1981"],a:1,d:2},
+  {q:"Vilket band sjöng 'Fortunate Son'?",o:["Creedence Clearwater Revival","The Eagles","Lynyrd Skynyrd","ZZ Top"],a:0,d:2},
+  {q:"Vem sjunger 'Fast Car' (1988 men 70s style)?",o:["Tracy Chapman","Bonnie Raitt","Joan Armatrading","Rickie Lee Jones"],a:0,d:2},
+  {q:"Vilket band sjöng 'Roxanne' (1978)?",o:["The Clash","The Police","Elvis Costello","Joe Jackson"],a:1,d:2},
+  {q:"Vem sjunger 'Son of a Preacher Man'?",o:["Carly Simon","Carole King","Dusty Springfield","Helen Reddy"],a:2,d:3},
+  {q:"Vilket år kom The Clash's 'London Calling'?",o:["1977","1979","1981","1983"],a:1,d:3},
+  {q:"Vem producerade Chic's 'Good Times'?",o:["Barry White","Quincy Jones","Nile Rodgers","Giorgio Moroder"],a:2,d:3},
+  {q:"Vilket band sjöng 'The Jean Genie'?",o:["T.Rex","David Bowie","Roxy Music","Gary Glitter"],a:1,d:3},
+  {q:"Vilket år kom Fleetwood Macs 'Rumours'?",o:["1975","1977","1979","1981"],a:1,d:2},
+  {q:"Vem sjunger 'Killing Me Softly' (original 1973)?",o:["Carly Simon","Roberta Flack","Nina Simone","Phoebe Snow"],a:1,d:3},
+  {q:"Vilket band sjöng 'Rock Around the Clock' (klassiker)?",o:["Elvis Presley","Chuck Berry","Bill Haley","Little Richard"],a:2,d:2},
+],
+
+"🎤 K-pop & Asiatisk musik": [
+  {q:"Vilket K-pop band sjöng 'Dynamite'?",o:["EXO","BLACKPINK","BTS","TWICE"],a:2,d:1},
+  {q:"Vilket K-pop band sjöng 'How You Like That'?",o:["EXO","BLACKPINK","BTS","aespa"],a:1,d:1},
+  {q:"Vem sjunger 'Gangnam Style'?",o:["Rain","G-Dragon","PSY","Taeyang"],a:2,d:1},
+  {q:"Vilket K-pop band sjöng 'IDOL'?",o:["EXO","BLACKPINK","BTS","NCT"],a:2,d:1},
+  {q:"Vilket K-pop band sjöng 'Fancy'?",o:["TWICE","BLACKPINK","Red Velvet","ITZY"],a:0,d:1},
+  {q:"Vad heter BTS fansen officiellt?",o:["Blinks","Stays","Army","Carats"],a:2,d:1},
+  {q:"Vilket K-pop band sjöng 'Kill This Love'?",o:["EXO","BLACKPINK","BTS","MAMAMOO"],a:1,d:1},
+  {q:"Vem sjunger 'La Vie en Rose' (K-pop)?",o:["TWICE","BLACKPINK","IU","IZ*ONE"],a:3,d:2},
+  {q:"Vilket K-pop band sjöng 'Zimzalabim'?",o:["TWICE","BLACKPINK","Red Velvet","aespa"],a:2,d:2},
+  {q:"Vad heter BLACKPINK fansen?",o:["Army","Blinks","Stays","Reveluvs"],a:1,d:1},
+  {q:"Vilket år debuterade BTS?",o:["2011","2013","2015","2017"],a:1,d:2},
+  {q:"Vilket K-pop band sjöng 'Butter'?",o:["EXO","BLACKPINK","BTS","TXT"],a:2,d:1},
+  {q:"Vem sjunger 'Celebrity' (2021)?",o:["TWICE","IU","aespa","MAMAMOO"],a:1,d:2},
+  {q:"Vilket K-pop band sjöng 'Next Level'?",o:["TWICE","BLACKPINK","Red Velvet","aespa"],a:3,d:2},
+  {q:"Vilket år debuterade BLACKPINK?",o:["2014","2016","2018","2020"],a:1,d:2},
+  {q:"Vilket K-pop band sjöng 'Power' (EXO)?",o:["EXO","SHINee","Super Junior","GOT7"],a:0,d:2},
+  {q:"Vad heter Stray Kids fansen?",o:["Army","Blinks","Stays","STAYs"],a:3,d:2},
+  {q:"Vilket K-pop band sjöng 'Miroh'?",o:["Stray Kids","ATEEZ","MONSTA X","VICTON"],a:0,d:2},
+  {q:"Vilket land kommer K-pop ifrån?",o:["Japan","Kina","Sydkorea","Thailand"],a:2,d:1},
+  {q:"Vilket K-pop band sjöng 'ZOOM'?",o:["JESSI","CL","HyunA","LEE HYORI"],a:0,d:3},
+  {q:"Vilket år kom Kpop Wave till västvärlden (rough estimate)?",o:["2000s","2010s","2015-2020","2020+"],a:2,d:2},
+  {q:"Vad heter BTS-memberens soloalbum 'Jack In the Box'?",o:["Jin","V","J-Hope","Jungkook"],a:2,d:3},
+  {q:"Vilket K-pop band sjöng 'TOMBOY'?",o:["(G)I-DLE","aespa","IVE","NMIXX"],a:0,d:3},
+  {q:"Vilket K-pop band sjöng 'ELEVEN'?",o:["aespa","IVE","NMIXX","NewJeans"],a:1,d:3},
+  {q:"Vem är K-pops 'Queens of 4th Gen'?",o:["BLACKPINK","TWICE","aespa & IVE","Red Velvet"],a:2,d:3},
+  {q:"Vilket år kom NewJeans debutalbum?",o:["2020","2021","2022","2023"],a:2,d:3},
+  {q:"Vilket K-pop band sjöng 'Cupid'?",o:["aespa","IVE","FIFTY FIFTY","NewJeans"],a:2,d:2},
+  {q:"Vad heter TWICE fansen?",o:["Army","Blinks","Stays","Once"],a:3,d:2},
+  {q:"Vilket K-pop band sjöng 'Not Shy'?",o:["ITZY","IVE","aespa","NMIXX"],a:0,d:2},
+  {q:"Vilket år debuterade TWICE?",o:["2013","2015","2017","2019"],a:1,d:3},
+],
+
+"🌌 Astronomi & Rymden": [
+  {q:"Vilket är solsystemets största planet?",o:["Saturn","Uranus","Jupiter","Neptunus"],a:2,d:1},
+  {q:"Hur lång tid tar det för ljuset att nå oss från solen?",o:["4 min","8 min","20 min","1 timme"],a:1,d:1},
+  {q:"Vad heter vår galax?",o:["Andromeda","Vintergatan","Triangeln","Magellanska molnet"],a:1,d:1},
+  {q:"Vilket år landade människan på månen?",o:["1967","1969","1971","1973"],a:1,d:1},
+  {q:"Vad heter den närmaste galaxen till Vintergatan?",o:["Triangelgalaxen","Andromeda","Stora Magellanska molnet","Lilla Magellanska molnet"],a:1,d:1},
+  {q:"Hur många månder har Mars?",o:["0","1","2","3"],a:2,d:1},
+  {q:"Vad heter den röda planeten?",o:["Venus","Jupiter","Mars","Saturn"],a:2,d:1},
+  {q:"Vilket år sände Voyager 1 ut?",o:["1973","1975","1977","1979"],a:2,d:1},
+  {q:"Vad är ett svart hål?",o:["En kollapsad stjärna","En nebulosa","En kvasar","En pulsar"],a:0,d:1},
+  {q:"Vilket år sände James Webb-teleskopet sina första bilder?",o:["2020","2021","2022","2023"],a:2,d:2},
+  {q:"Hur gammal är universum?",o:["8 miljarder år","10 miljarder år","13.8 miljarder år","20 miljarder år"],a:2,d:2},
+  {q:"Vad heter teorin om universums ursprung?",o:["Steady State","Big Crunch","Big Bang","Inflation"],a:2,d:1},
+  {q:"Vilket år togs det första fotot av ett svart hål?",o:["2015","2017","2019","2021"],a:2,d:2},
+  {q:"Vad heter det svarta hålet i centrum av Vintergatan?",o:["Sagittarius A*","Cygnus X-1","TON 618","M87*"],a:0,d:2},
+  {q:"Vilken planet har ringar?",o:["Bara Saturn","Saturn och Uranus","Saturn, Uranus och Jupiter","Alla jätteplaneter"],a:3,d:2},
+  {q:"Hur lång tid tar det för ljuset att resa från Proxima Centauri?",o:["1 år","2.5 år","4.2 år","10 år"],a:2,d:2},
+  {q:"Vad heter den process där stjärnor skapas?",o:["Fusion","Fission","Gravitationskollaps","Supernovaexplosion"],a:2,d:2},
+  {q:"Vilket år landade Curiosity på Mars?",o:["2008","2010","2012","2014"],a:2,d:2},
+  {q:"Vad heter Jupiters störst måne?",o:["Europa","Ganymedes","Callisto","Io"],a:1,d:3},
+  {q:"Vilket år kom Hubble-teleskopet?",o:["1986","1988","1990","1992"],a:2,d:2},
+  {q:"Vad är en pulsars?",o:["En roterande neutronsstjärna","En kollapsad vit dvärg","En quasar","En röd jätte"],a:0,d:3},
+  {q:"Hur lång tid tar det för Neptunus att kretsa runt solen?",o:["84 år","100 år","165 år","248 år"],a:2,d:3},
+  {q:"Vad heter den teori som förklarar mörk materia?",o:["WIMP-teorin","Lambda-CDM","Inflation","Multiverse"],a:1,d:3},
+  {q:"Vilket år kom Perseverance-rovern till Mars?",o:["2019","2021","2022","2023"],a:1,d:2},
+  {q:"Vad kallas det när en stjärna exploderar?",o:["Nova","Supernova","Hypernova","Kilonova"],a:1,d:2},
+  {q:"Hur många planeter finns i solsystemet?",o:["7","8","9","10"],a:1,d:1},
+  {q:"Vad heter Saturnus störst måne?",o:["Titan","Enceladus","Rhea","Mimas"],a:0,d:2},
+  {q:"Vilket år sände NASA Mars Pathfinder?",o:["1993","1995","1997","1999"],a:2,d:3},
+  {q:"Vad är ett exoplanet?",o:["En planet utanför solsystemet","En planet utan atmosfär","En dvärg-planet","En asteroid"],a:0,d:1},
+  {q:"Vad heter den snabbaste typen av stjärna?",o:["Pulsar","Magnetar","Kvasar","Blixtstjärna"],a:0,d:3},
+],
+
+"🍹 Alkohol & Drinkar": [
+  {q:"Vad är huvudingrediensen i en Margarita?",o:["Vodka","Rum","Tequila","Gin"],a:2,d:1},
+  {q:"Vilket land kommer whisky (Scotch) ifrån?",o:["Irland","Skottland","USA","Japan"],a:1,d:1},
+  {q:"Vad är en Mojito gjord på?",o:["Vodka och lime","Rum, mynta, lime och socker","Gin och tonic","Tequila och citron"],a:1,d:1},
+  {q:"Vilket land kommer Champagne ifrån?",o:["Spanien","Italien","Frankrike","Belgien"],a:2,d:1},
+  {q:"Vad heter den klassiska spriten i Negroni?",o:["Campari, gin och vermut","Vodka, triple sec och lime","Tequila, triple sec och lime","Bourbon, angostura och socker"],a:0,d:1},
+  {q:"Vilket land kommer Vodka ursprungligen ifrån?",o:["Polen eller Ryssland","Sverige","Finland","Ukraina"],a:0,d:1},
+  {q:"Vad är en Aperol Spritz gjord på?",o:["Aperol, Campari och soda","Aperol, prosecco och soda","Aperol, gin och tonic","Aperol, vodka och lime"],a:1,d:1},
+  {q:"Vilket land kommer Bourbon från?",o:["Skottland","Irland","Kanada","USA"],a:3,d:1},
+  {q:"Vad heter den japanska spriten av ris?",o:["Mirin","Sake","Shochu","Amazake"],a:1,d:1},
+  {q:"Vilket år grundades Absolut Vodka?",o:["1869","1879","1889","1899"],a:1,d:2},
+  {q:"Vad heter den kuba-klassiska cocktailen med rom och cola?",o:["Mojito","Daiquiri","Cuba Libre","Dark and Stormy"],a:2,d:1},
+  {q:"Vilket land producerar mest öl i världen?",o:["Tyskland","USA","Kina","Tjeckien"],a:2,d:2},
+  {q:"Vad är en Old Fashioned gjord på?",o:["Vodka, angostura och socker","Bourbon eller rye, angostura och socker","Rum, angostura och socker","Gin, angostura och socker"],a:1,d:2},
+  {q:"Vilket land kom det klassiska ölet Pilsner ifrån?",o:["Bayern","Österrike","Böhmen (Tjeckien)","Belgien"],a:2,d:2},
+  {q:"Vad heter den irländska stout-ölen känd världen över?",o:["Heineken","Guinness","Carlsberg","Stella Artois"],a:1,d:1},
+  {q:"Vad är Cointreau?",o:["En rom","En likör med apelsinsmak","En vodka","En gin"],a:1,d:2},
+  {q:"Vilket år grundades Absolut Vodkas ursprungliga destilleri?",o:["1879","1889","1899","1909"],a:0,d:3},
+  {q:"Vad heter den mexikanska drycken från agave (inte tequila)?",o:["Pulque","Mezcal","Sotol","Raicilla"],a:1,d:2},
+  {q:"Vilket land producerar Rioja-vin?",o:["Frankrike","Italien","Spanien","Portugal"],a:2,d:1},
+  {q:"Vad heter cocktailen med vodka, lime och ginger beer?",o:["Paloma","Moscow Mule","Dark and Stormy","Gin Mule"],a:1,d:2},
+  {q:"Vilket land uppfann ölen?",o:["England","Mesopotamien (Irak/Syrien)","Egypten","Kina"],a:1,d:3},
+  {q:"Vad är Amaretto gjort på?",o:["Mandlar","Apelsinskal","Körsbär","Aprikos"],a:0,d:2},
+  {q:"Vilket år grundades Guinness?",o:["1749","1759","1769","1779"],a:1,d:3},
+  {q:"Vad heter den argentinska drycken gjord på mate?",o:["Chimarrão","Tererê","Mate","Yerba"],a:2,d:3},
+  {q:"Vilket land producerar mest vin i världen?",o:["Frankrike","Spanien","Italien","USA"],a:2,d:2},
+  {q:"Vad är en Espresso Martini gjord på?",o:["Vodka, kaffelikör och espresso","Gin, kaffelikör och espresso","Rum, kaffelikör och espresso","Bourbon, kaffelikör och espresso"],a:0,d:2},
+  {q:"Vilket år kom Baileys Irish Cream?",o:["1967","1972","1977","1982"],a:1,d:3},
+  {q:"Vad heter den klassiska New Orleans cocktailen?",o:["Hurricane","Sazerac","Ramos Gin Fizz","Vieux Carré"],a:1,d:3},
+  {q:"Vilket land producerar mest whisky i världen?",o:["Skottland","Irland","USA","Japan"],a:2,d:2},
+  {q:"Vad är Campari?",o:["En italiensk bitter likör","En fransk vin-aperitif","En spansk sherry","En belgisk öl"],a:0,d:2},
+],
+};
+
+(function() {
+  if (typeof QUESTION_DB === 'undefined') return;
+  const existing = new Set();
+  Object.values(QUESTION_DB).forEach(qs => qs.forEach(q => existing.add(q.q.toLowerCase().trim())));
+  let added = 0, skipped = 0;
+  Object.keys(QUESTION_DB9).forEach(cat => {
+    const newQs = QUESTION_DB9[cat].filter(q => {
+      if(existing.has(q.q.toLowerCase().trim())){skipped++;return false;}
+      existing.add(q.q.toLowerCase().trim());
+      return true;
+    });
+    if(QUESTION_DB[cat]){ QUESTION_DB[cat]=QUESTION_DB[cat].concat(newQs); }
+    else { QUESTION_DB[cat]=newQs; }
+    added += newQs.length;
+  });
+  console.log('questions9.js: '+added+' added, '+skipped+' dupes skipped');
+})();
