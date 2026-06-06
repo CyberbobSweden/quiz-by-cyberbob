@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="AW Quiz">
 <meta name="theme-color" content="#0057A8">
 <meta name="description" content="Combitech AW Quiz – multiplayer quiz i realtid">
-<meta name="version" content="v3.0-multicat">
+<meta name="version" content="v3.1-responsive">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230057A8'/><text y='380' x='60' font-size='380'>🎯</text></svg>">
 <title>Combitech Umeå – AW Quiz</title>
@@ -152,7 +152,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 /* ── Safe area for notch phones ── */
 body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
-h1{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:800;line-height:1.15}
+h1{font-family:'Syne',sans-serif;font-size:clamp(1.2rem,3.5vw,2.2rem);font-weight:800;line-height:1.15}
 h2{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:700}
 h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
 p{color:var(--muted);line-height:1.65}
@@ -284,14 +284,14 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
       <div class="logo-mark">C</div>
       <div>
         <div class="logo-main">Combitech Quiz</div>
-        <div class="logo-sub">📍 Umeå AW</div>
+        <div class="logo-sub" style="display:none">📍 Umeå AW</div>
       </div>
     </a>
     <div class="hdr-right">
-      <div class="hdr-pill" id="hdr-room-code" style="display:none;background:rgba(247,206,69,.15);border-color:rgba(247,206,69,.4);color:var(--gold);font-weight:800;letter-spacing:.1em;cursor:pointer" onclick="showQR()"></div>
+      <div class="hdr-pill" id="hdr-room-code" style="display:none;background:rgba(247,206,69,.15);border-color:rgba(247,206,69,.4);color:var(--gold);font-weight:800;letter-spacing:.06em;cursor:pointer;font-size:.7rem;padding:4px 10px" onclick="showQR()"></div>
       <button class="btn btn-sm" id="btn-qr" onclick="showQR()" title="Visa QR-kod">📱 QR</button>
       <button class="btn btn-outline btn-sm" id="btn-install" onclick="installPWA()" title="Installera app">📲 Installera</button>
-      <button class="btn btn-danger btn-sm" id="hdr-reset" onclick="adminHardReset()">↺ Reset</button>
+      <button class="btn btn-danger btn-sm" id="hdr-reset" onclick="adminHardReset()" style="display:none">↺ Reset</button>
       <div class="hdr-pill" id="hdr-pill">Lobby</div>
     </div>
   </header>
