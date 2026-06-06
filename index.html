@@ -331,9 +331,10 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div id="admin-setup" style="display:none">
           <div class="warn-box mb16">👑 Du är admin – välj tema, svårighet och starta!</div>
           <div class="field">
-            <label>Välj kategori</label>
+            <label>Välj kategori(er) <span class="dim" style="font-weight:400;text-transform:none">(klicka flera för mix!)</span></label>
             <div class="preset-grid" id="preset-grid"></div>
-            <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.82rem;margin-top:6px">⚠️ Välj en kategori ovan!</p>
+            <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.82rem;margin-top:6px">⚠️ Välj minst en kategori ovan!</p>
+            <div id="cat-summary" style="display:none;margin-top:8px;font-size:.8rem;color:var(--gold);font-weight:700"></div>
           </div>
           <div class="field">
             <label>Svårighetsgrad</label>
@@ -500,6 +501,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions7.js"></script>
 <script src="questions8.js"></script>
 <script src="questions9.js"></script>
+<script src="questions10.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -592,16 +594,30 @@ function dbListen(p,cb){return window._onValue(dbRef(p),s=>cb(s.val()))}
   }
 })();
 
-// Presets
+// Presets – multi-select
+window._selectedCats = []; // Array of selected cats
 (function(){
   const g=document.getElementById('preset-grid');
   PRESETS.forEach(p=>{
     const b=document.createElement('button');b.className='preset';b.textContent=p.label;
     b.onclick=()=>{
-      window._selectedCat=p.cat;
-      document.getElementById('cat-warning').style.display='none';
-      document.querySelectorAll('.preset-grid .preset').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
+      const idx = window._selectedCats.indexOf(p.cat);
+      if(idx>=0){
+        window._selectedCats.splice(idx,1);
+        b.classList.remove('active');
+      } else {
+        window._selectedCats.push(p.cat);
+        b.classList.add('active');
+      }
+      // Also keep legacy _selectedCat for compat
+      window._selectedCat = window._selectedCats.length===1 ? window._selectedCats[0] : (window._selectedCats.length>1 ? 'multi' : null);
+      document.getElementById('cat-warning').style.display=window._selectedCats.length?'none':'';
+      // Update summary
+      const sum = document.getElementById('cat-summary');
+      if(window._selectedCats.length>1){
+        sum.style.display='';
+        sum.textContent='✅ Mixar '+window._selectedCats.length+' kategorier – '+window._selectedCats.length*30+'+ frågor i poolen';
+      } else { sum.style.display='none'; }
     };
     g.appendChild(b);
   });
@@ -1100,31 +1116,50 @@ function renderFinal(entries){
 }
 
 async function adminGenerate(){
-  const cat = window._selectedCat;
-  if(!cat){
+  const cats = window._selectedCats || [];
+  if(!cats.length){
     document.getElementById('cat-warning').style.display='';
     return;
   }
-  const savedEntries = await dbGet(`${GAME_KEY}/entries`);
-  await dbSet(GAME_KEY,{phase:'loading',theme:cat,entries:savedEntries,questions:null,currentQ:0,answers:null,difficulty,qCount,timerSecs:customTimerSecs});
 
-  // Get questions from local DB with correct count and difficulty
-  const questions = getQuestionsFromDB(cat, difficulty, qCount);
+  const savedEntries = await dbGet(GAME_KEY+'/entries');
+  const theme = cats.length===1 ? cats[0] : cats.join(', ');
+  await dbSet(GAME_KEY,{phase:'loading',theme,entries:savedEntries,questions:null,currentQ:0,answers:null,difficulty,qCount,timerSecs:customTimerSecs});
+
+  // Get questions – support multi-cat
+  let questions;
+  if(cats.length===1){
+    questions = getQuestionsFromDB(cats[0], difficulty, qCount);
+  } else {
+    // Pool from all selected cats, shuffle, pick
+    let pool = [];
+    cats.forEach(cat=>{
+      const qs = getQuestionsFromDB(cat, difficulty, Math.ceil(qCount/cats.length)+5);
+      pool = pool.concat(qs);
+    });
+    // Shuffle pool
+    for(let i=pool.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+    questions = pool.slice(0, qCount);
+  }
 
   if(!questions || questions.length === 0){
-    alert('Inga frågor hittades för den kategorin!');
+    alert('Inga frågor hittades! Kontrollera kategorivalet.');
     return;
   }
 
-  // Reset scores to 0 but keep name/type/color/members
+  // RESET scores to 0 for everyone – always fresh start!
   const entries = await dbGet(GAME_KEY+'/entries');
   if(entries){
     for(const key of Object.keys(entries)){
-      const e=entries[key];
-      if(e) await dbSet(GAME_KEY+'/entries/'+key+'/score',0);
+      if(entries[key]) await dbSet(GAME_KEY+'/entries/'+key+'/score', 0);
     }
   }
+
   await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
+  showToast('🎯 Quiz startar med '+questions.length+' frågor!','ok',2500);
 }
 window.adminGenerate=adminGenerate;
 
@@ -1143,11 +1178,15 @@ window.adminNext=adminNext;
 
 // Hard reset – clears EVERYTHING, back to fresh lobby
 async function adminHardReset(){
-  if(!isAdmin)return; // Only admin can reset
+  if(!isAdmin)return;
   if(!confirm('Nollställ allt? Alla spelare, poäng och frågor raderas.'))return;
   clearTimer();
   if(unsubscribe){unsubscribe();unsubscribe=null;}
   myAnswers={};lastPhase=null;lastQIdx=-1;
+  // Clear category selection
+  window._selectedCat=null; window._selectedCats=[];
+  document.querySelectorAll('.preset-grid .preset').forEach(x=>x.classList.remove('active'));
+  const sum=document.getElementById('cat-summary');if(sum)sum.style.display='none';
   await dbSet(GAME_KEY,{phase:'lobby',roomCode:window._roomCode,createdAt:Date.now()});
   showScreen('lobby');
   renderLobbyControls();
@@ -1391,7 +1430,7 @@ function leaveQuiz(){
   clearTimer();
   if(unsubscribe){unsubscribe();unsubscribe=null;}
   myAnswers={};lastPhase=null;lastQIdx=-1;hasJoined=false;
-  window._selectedCat=null; window._roomCode=null;
+  window._selectedCat=null; window._selectedCats=[]; window._roomCode=null;
   GAME_KEY='combitech-quiz-game';
   isTeamMode=false;myName='';myTeam='';isAdmin=false;
   document.getElementById('team-toggle').classList.remove('on');
@@ -1409,7 +1448,6 @@ function getQuestionsFromDB(category, difficulty, count) {
     return [];
   }
   const qs = getQuestions(category, difficulty, count);
-  // Randomize answer positions so correct answer isn't always same slot
   return qs.map(q => randomizeAnswers(q));
 }
 
