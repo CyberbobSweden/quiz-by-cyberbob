@@ -205,9 +205,10 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .podium-pts{font-size:.75rem;color:var(--gold);font-weight:800;font-family:'Syne',sans-serif}
 .podium-block{border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
 .preset-grid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.preset{padding:7px 15px;border-radius:999px;background:var(--surf2);border:1.5px solid var(--border);font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:border-color .18s,background .18s}
-.preset:hover{border-color:var(--blue-bright);background:rgba(26,130,255,.1)}
-.preset.active{border-color:var(--gold);background:rgba(247,206,69,.1);color:var(--gold)}
+.preset{padding:7px 15px;border-radius:999px;background:var(--surf2);border:1.5px solid var(--border);font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .18s;position:relative}
+.preset:hover{border-color:var(--blue-bright);background:rgba(26,130,255,.12);transform:translateY(-1px)}
+.preset.active{border-color:var(--gold);background:rgba(247,206,69,.18);color:var(--gold);box-shadow:0 0 0 2px rgba(247,206,69,.25)}
+.preset.active::after{content:'✓';margin-left:5px;font-size:.75rem}
 .info-box{background:rgba(26,130,168,.08);border:1px solid rgba(26,130,255,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:#7EC5FF;line-height:1.5}
 .warn-box{background:rgba(247,206,69,.07);border:1px solid rgba(247,206,69,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:var(--gold);line-height:1.5}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:200}
@@ -331,7 +332,8 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
         <div id="admin-setup" style="display:none">
           <div class="warn-box mb16">👑 Du är admin – välj tema, svårighet och starta!</div>
           <div class="field">
-            <label>Välj kategori(er) <span class="dim" style="font-weight:400;text-transform:none">(klicka flera för mix!)</span></label>
+            <label>Välj kategori(er)</label>
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px;margin-top:-4px">👆 Klicka på en eller flera kategorier – markerade = valda</p>
             <div class="preset-grid" id="preset-grid"></div>
             <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.82rem;margin-top:6px">⚠️ Välj minst en kategori ovan!</p>
             <div id="cat-summary" style="display:none;margin-top:8px;font-size:.8rem;color:var(--gold);font-weight:700"></div>
@@ -502,6 +504,7 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 <script src="questions8.js"></script>
 <script src="questions9.js"></script>
 <script src="questions10.js"></script>
+<script src="questions11.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1525,7 +1528,7 @@ function spawnConfetti(n=40){
 }
 </script>
 <div style="position:fixed;bottom:8px;right:12px;font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;pointer-events:none;z-index:999">
-  v2026.06.06-cbe418b
+  v2026.06.06-ee6e10c
 </div>
 <!-- Toast notifications -->
 <div id="toast-container" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:600;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none"></div>
