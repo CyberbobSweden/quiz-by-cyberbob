@@ -44,65 +44,70 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes revealUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--radius);padding:36px 40px;box-shadow:var(--shadow)}
 .card+.card{margin-top:14px}
-/* ── Responsive – mobile first ── */
-/* Tablet */
+/* ── Responsive ── */
 @media(max-width:860px){
   .screen{max-width:100%}
-  .card{padding:28px 24px}
+  .card{padding:26px 22px}
+  .preset-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 }
-/* Mobile */
 @media(max-width:600px){
-  header{padding:8px 12px;gap:8px}
-  .logo-mark{width:30px;height:30px;font-size:.9rem}
-  .logo-main{font-size:.78rem}
+  header{padding:8px 10px;gap:6px}
+  .logo-mark{width:28px;height:28px;font-size:.85rem;border-radius:7px}
+  .logo-main{font-size:.75rem}
   .logo-sub{display:none}
-  .hdr-right{gap:6px}
-  #hdr-reset{padding:5px 10px;font-size:.72rem}
-  #btn-qr{padding:5px 10px;font-size:.72rem}
-  #btn-install{padding:5px 10px;font-size:.72rem}
-  .hdr-pill{padding:4px 10px;font-size:.7rem}
-  main{padding:12px 8px 32px;justify-content:flex-start}
-  .screen{max-width:100%}
-  .card{padding:18px 14px;border-radius:12px}
-  .card+.card{margin-top:10px}
-  h1{font-size:1.35rem!important;line-height:1.2}
-  h2{font-size:1.1rem!important}
-  h3{font-size:.9rem!important}
-  p{font-size:.88rem}
-  .btn{padding:11px 16px;font-size:.84rem}
-  .btn-lg{padding:13px 18px;font-size:.9rem}
-  .btn-sm{padding:7px 12px;font-size:.75rem}
-  .diff-grid{gap:6px}
-  .diff-btn{padding:8px 4px;font-size:.7rem}
-  .diff-btn .diff-icon{font-size:1.1rem}
-  .preset{padding:6px 10px;font-size:.75rem}
-  .preset-grid{gap:6px}
-  .opt{padding:12px 12px;font-size:.88rem;gap:10px}
-  .opt-key{min-width:28px;height:28px;font-size:.78rem}
-  .q-text{font-size:1rem!important;margin-bottom:18px}
-  .q-cat{font-size:.65rem}
-  .timer-wrap{margin-bottom:14px}
-  .score-row{padding:8px 10px}
-  .score-name{font-size:.84rem}
-  .score-pts{font-size:.88rem}
-  .entry-chip{padding:6px 10px;font-size:.8rem}
-  .field{margin-bottom:12px}
-  label{font-size:.74rem}
-  input[type=text]{padding:11px 13px;font-size:.9rem}
-  hr{margin:16px 0}
-  .row{gap:7px}
-  .toggle-label{font-size:.84rem}
+  .hdr-right{gap:5px}
+  #hdr-reset{padding:5px 9px;font-size:.7rem}
+  #btn-qr,#btn-install{padding:5px 9px;font-size:.7rem}
+  .hdr-pill{padding:3px 8px;font-size:.68rem}
+  main{padding:10px 8px 28px;justify-content:flex-start}
+  .card{padding:16px 13px;border-radius:12px}
+  .card+.card{margin-top:8px}
+  h1{font-size:1.25rem!important;line-height:1.2}
+  h2{font-size:1.05rem!important}
+  h3{font-size:.88rem!important}
+  p{font-size:.85rem}
+  .btn{padding:10px 14px;font-size:.82rem}
+  .btn-lg{padding:12px 16px;font-size:.86rem}
+  .btn-sm{padding:6px 11px;font-size:.72rem}
+  .diff-grid{gap:5px}
+  .diff-btn{padding:7px 4px;font-size:.68rem}
+  .diff-btn .diff-icon{font-size:1rem}
+  .diff-btn span:last-child{display:none}
+  .preset-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:5px}
+  .preset{padding:7px 6px;font-size:.72rem;border-radius:8px}
+  .opt{padding:11px 11px;font-size:.86rem;gap:9px}
+  .opt-key{min-width:26px;height:26px;font-size:.76rem;border-radius:6px}
+  .q-text{font-size:.96rem!important;margin-bottom:16px}
+  .q-cat{font-size:.62rem}
+  .timer-wrap{margin-bottom:12px}
+  .score-row{padding:7px 9px;gap:8px}
+  .score-name{font-size:.82rem}
+  .score-pts{font-size:.85rem}
+  .score-rank{font-size:.9rem;width:20px}
+  .entry-chip{padding:5px 9px;font-size:.78rem}
+  .chip-avatar{width:22px;height:22px;font-size:.7rem}
+  .field{margin-bottom:10px}
+  label{font-size:.72rem}
+  input[type=text]{padding:10px 12px;font-size:.88rem}
+  hr{margin:14px 0}
+  .row{gap:6px}
+  .toggle-label{font-size:.82rem}
+  .toggle-switch{width:42px;height:23px}
+  .toggle-switch::after{width:16px;height:16px}
+  .badge{padding:3px 9px;font-size:.66rem}
+  .info-box{font-size:.8rem;padding:10px 12px}
 }
-/* Small mobile */
-@media(max-width:390px){
-  .card{padding:14px 12px}
-  h1{font-size:1.2rem!important}
+@media(max-width:400px){
+  .card{padding:13px 11px}
+  h1{font-size:1.1rem!important}
   .options{grid-template-columns:1fr}
-  .preset{padding:5px 8px;font-size:.7rem}
-  .opt{padding:11px 10px;font-size:.84rem}
-  .btn-lg{font-size:.84rem;padding:12px 14px}
-  .hdr-room-code{font-size:.65rem!important;padding:3px 8px!important;letter-spacing:.05em!important}
-  .logo-main{font-size:.72rem}
+  .preset{padding:6px 5px;font-size:.68rem}
+  .preset-grid{grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:4px}
+  .opt{padding:10px 9px;font-size:.82rem}
+  .btn-lg{font-size:.82rem;padding:11px 13px}
+  .hdr-room-code{font-size:.62rem!important;padding:3px 7px!important;letter-spacing:.04em!important}
+  .logo-main{font-size:.7rem}
+  .score-bar-wrap{display:none}
 }
 
 /* ── QR Modal ── */
@@ -238,11 +243,11 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
 .podium-name{font-size:.8rem;font-weight:700;text-align:center;max-width:110px}
 .podium-pts{font-size:.75rem;color:var(--gold);font-weight:800;font-family:'Syne',sans-serif}
 .podium-block{border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
-.preset-grid{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.preset{padding:7px 15px;border-radius:999px;background:var(--surf2);border:1.5px solid var(--border);font-size:.8rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .18s;position:relative}
-.preset:hover{border-color:var(--blue-bright);background:rgba(26,130,255,.12);transform:translateY(-1px)}
-.preset.active{border-color:var(--gold);background:rgba(247,206,69,.18);color:var(--gold);box-shadow:0 0 0 2px rgba(247,206,69,.25)}
-.preset.active::after{content:'✓';margin-left:5px;font-size:.75rem}
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin:10px 0}
+.preset{padding:8px 10px;border-radius:10px;background:var(--surf2);border:1.5px solid var(--border);font-size:.78rem;font-weight:700;cursor:pointer;color:var(--text);transition:all .18s;position:relative;text-align:center;width:100%}
+.preset:hover{border-color:var(--blue-bright);background:rgba(26,130,255,.12)}
+.preset.active{border-color:var(--gold);background:rgba(247,206,69,.15);color:var(--gold);box-shadow:0 0 0 2px rgba(247,206,69,.2)}
+.preset.active::before{content:'✓ ';font-size:.7rem}
 .info-box{background:rgba(26,130,168,.08);border:1px solid rgba(26,130,255,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:#7EC5FF;line-height:1.5}
 .warn-box{background:rgba(247,206,69,.07);border:1px solid rgba(247,206,69,.25);border-radius:var(--rad-sm);padding:12px 16px;font-size:.85rem;color:var(--gold);line-height:1.5}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:200}
@@ -295,8 +300,8 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
     <!-- JOIN – Välj: skapa eller gå med -->
     <div class="screen active" id="screen-join">
       <div class="card">
-        <h1>Välkommen till<br><span class="accent">AW Quiz! 🎉</span></h1>
-        <p class="mt8">Skapa ett nytt quiz-rum eller gå med i ett befintligt med en rumskod.</p>
+        <h1>Välkommen till <span class="accent">AW Quiz! 🎉</span></h1>
+        <p class="mt8" style="font-size:.85rem">Skapa ett rum eller gå med med en rumskod.</p>
         <hr>
 
         <!-- TAB SWITCHER -->
@@ -364,13 +369,12 @@ hr{border:none;border-top:1px solid var(--border);margin:22px 0}
           <span id="lobby-admin-badge"></span>
         </div>
         <div id="admin-setup" style="display:none">
-          <div class="warn-box mb16">👑 Du är admin – välj tema, svårighet och starta!</div>
+          <div class="warn-box mb12" style="font-size:.82rem;padding:10px 14px">👑 Admin – välj kategori, svårighet och starta!</div>
           <div class="field">
-            <label>Välj kategori(er)</label>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px;margin-top:-4px">👆 Klicka på en eller flera kategorier – markerade = valda</p>
+            <label>Välj kategori(er) <span style="font-weight:400;text-transform:none;font-size:.72rem;color:var(--muted)">(klicka flera för mix)</span></label>
             <div class="preset-grid" id="preset-grid"></div>
-            <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.82rem;margin-top:6px">⚠️ Välj minst en kategori ovan!</p>
-            <div id="cat-summary" style="display:none;margin-top:8px;font-size:.8rem;color:var(--gold);font-weight:700"></div>
+            <p id="cat-warning" style="display:none;color:var(--wrong);font-size:.78rem;margin-top:5px">⚠️ Välj minst en kategori!</p>
+            <div id="cat-summary" style="display:none;margin-top:6px;font-size:.78rem;color:var(--gold);font-weight:700"></div>
           </div>
           <div class="field">
             <label>Svårighetsgrad</label>
@@ -1665,7 +1669,7 @@ function spawnConfetti(n=40){
 }
 </script>
 <div style="position:fixed;bottom:8px;right:12px;font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;pointer-events:none;z-index:999">
-  v2026.06.06-677a68d
+  v2026.06.06-e7615f2
 </div>
 <!-- Toast notifications -->
 <div id="toast-container" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:600;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none"></div>
