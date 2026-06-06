@@ -1,0 +1,205 @@
+// questions10.js – Kraftig utökning av Amerikansk fotboll + toppar upp svaga kategorier
+const QUESTION_DB10 = {
+
+"🏈 Amerikansk fotboll": [
+  // LÄTT
+  {q:"Vad heter NFL:s mästerskapstrofe?",o:["Lombardi Trophy","Stanley Cup","Larry O'Brien Trophy","Commissioner's Trophy"],a:0,d:1},
+  {q:"Hur många downs har ett lag på sig att ta 10 yards?",o:["3","4","5","6"],a:1,d:1},
+  {q:"Hur många poäng ger en touchdown?",o:["3","4","6","7"],a:2,d:1},
+  {q:"Hur många poäng ger en field goal?",o:["1","2","3","4"],a:2,d:1},
+  {q:"Hur många spelare per lag är på planen?",o:["9","10","11","12"],a:2,d:1},
+  {q:"Vilket lag vann Super Bowl LVII (2023)?",o:["Philadelphia Eagles","Kansas City Chiefs","San Francisco 49ers","Dallas Cowboys"],a:1,d:1},
+  {q:"Vilket lag vann Super Bowl LVIII (2024)?",o:["Kansas City Chiefs","San Francisco 49ers","Detroit Lions","Baltimore Ravens"],a:0,d:1},
+  {q:"Vem kallas 'GOAT' i NFL-historien?",o:["Aaron Rodgers","Peyton Manning","Tom Brady","Patrick Mahomes"],a:2,d:1},
+  {q:"Hur många yards ger en first down?",o:["5","7","10","15"],a:2,d:1},
+  {q:"Vilket lag spelar hemma på Lambeau Field?",o:["Chicago Bears","Green Bay Packers","Minnesota Vikings","Detroit Lions"],a:1,d:1},
+  {q:"Vad heter All-Star-matchen i NFL?",o:["NFL All-Stars","Super Bowl Pro","Pro Bowl","NFL Classic"],a:2,d:1},
+  {q:"Hur lång är en NFL-plan i yards?",o:["80","100","110","120"],a:1,d:1},
+  {q:"Vad kallas en säkerhet (safety) i NFL?",o:["2 poäng till försvarslaget","1 poäng till anfallslaget","3 poäng till försvarslaget","6 poäng till anfallslaget"],a:0,d:1},
+  {q:"Vilket lag spelar hemma på AT&T Stadium?",o:["Houston Texans","Dallas Cowboys","Tennessee Titans","Arizona Cardinals"],a:1,d:1},
+  {q:"Hur många Super Bowls vann Tom Brady totalt?",o:["5","6","7","8"],a:2,d:1},
+  {q:"Vilket lag spelar hemma på Arrowhead Stadium?",o:["Denver Broncos","Kansas City Chiefs","Las Vegas Raiders","LA Chargers"],a:1,d:1},
+  {q:"Vad heter den position som kastar bollen i NFL?",o:["Running Back","Wide Receiver","Quarterback","Tight End"],a:2,d:1},
+  {q:"Vilket lag spelar hemma på SoFi Stadium?",o:["Seattle Seahawks","Las Vegas Raiders","LA Rams och Chargers","San Francisco 49ers"],a:2,d:1},
+  // MEDEL
+  {q:"Vilket lag vann Super Bowl LVI (2022)?",o:["LA Rams","Cincinnati Bengals","San Francisco 49ers","Dallas Cowboys"],a:0,d:2},
+  {q:"Vem håller rekordet för flest NFL-touchdown passes?",o:["Brett Favre","Peyton Manning","Tom Brady","Drew Brees"],a:2,d:2},
+  {q:"Vilket år spelades det första Super Bowl?",o:["1964","1967","1969","1971"],a:1,d:2},
+  {q:"Vilket lag vann Super Bowl I?",o:["Green Bay Packers","Dallas Cowboys","NY Giants","SF 49ers"],a:0,d:2},
+  {q:"Hur många lag deltar i NFL-playoffs?",o:["8","12","14","16"],a:2,d:2},
+  {q:"Vilket år kom Patrick Mahomes till NFL?",o:["2015","2017","2019","2021"],a:1,d:2},
+  {q:"Vem är NFL:s all-time rushing leader?",o:["Barry Sanders","Emmitt Smith","Walter Payton","Jim Brown"],a:1,d:2},
+  {q:"Vilket lag vann Super Bowl LV (2021)?",o:["Kansas City Chiefs","Tampa Bay Buccaneers","New England Patriots","Green Bay Packers"],a:1,d:2},
+  {q:"Vad heter NFL-draften?",o:["NFL Combine","NFL Draft","NFL Selection","Pro Bowl Draft"],a:1,d:2},
+  {q:"Hur många rounds har NFL Draft?",o:["5","6","7","8"],a:2,d:2},
+  {q:"Vilket lag spelar hemma på Gillette Stadium?",o:["New York Giants","New England Patriots","Buffalo Bills","Miami Dolphins"],a:1,d:2},
+  {q:"Vad heter NFL-laget i Las Vegas?",o:["Las Vegas Knights","Las Vegas Raiders","Las Vegas Cowboys","Las Vegas Broncos"],a:1,d:2},
+  {q:"Vilket lag spelar hemma på MetLife Stadium?",o:["NY Jets och Giants","New England Patriots","Dallas Cowboys","Philadelphia Eagles"],a:0,d:2},
+  {q:"Hur lång är en NFL-quarter?",o:["10 min","12 min","15 min","20 min"],a:2,d:2},
+  {q:"Vad heter den position som tar emot långa pass i NFL?",o:["Running Back","Wide Receiver","Quarterback","Linebacker"],a:1,d:2},
+  {q:"Vilket lag vann Super Bowl LI (51) 2017?",o:["Atlanta Falcons","New England Patriots","Seattle Seahawks","Pittsburgh Steelers"],a:1,d:2},
+  {q:"Vem vann Super Bowl MVP 2023?",o:["Patrick Mahomes","Jalen Hurts","Travis Kelce","Tyreek Hill"],a:0,d:2},
+  {q:"Vilket lag har flest Super Bowl-segrar totalt?",o:["Dallas Cowboys","New England Patriots","San Francisco 49ers","Pittsburgh Steelers"],a:1,d:2},
+  {q:"Vad heter position som skyddar QB i NFL?",o:["Tight End","Offensive Line","Wide Receiver","Linebacker"],a:1,d:2},
+  {q:"Vilket NFL-lag heter 'America's Team'?",o:["Dallas Cowboys","New England Patriots","Green Bay Packers","NY Giants"],a:0,d:2},
+  // SVÅRT
+  {q:"Vilket lag har flest förlorade Super Bowls?",o:["New England Patriots","Denver Broncos","Dallas Cowboys","Buffalo Bills"],a:3,d:3},
+  {q:"Vem kallas 'The Refrigerator' i NFL-historien?",o:["William Perry","Fridge White","Lawrence Taylor","Mean Joe Greene"],a:0,d:3},
+  {q:"Vilket år grundades NFL?",o:["1910","1920","1930","1940"],a:1,d:3},
+  {q:"Vad heter trofén som ges till Super Bowl MVP?",o:["Lombardi Trophy","Pete Rozelle Trophy","Dan Marino Trophy","Vince Lombardi Award"],a:1,d:3},
+  {q:"Vilket NFL-lag spelar hemma på Soldier Field?",o:["Green Bay Packers","Minnesota Vikings","Chicago Bears","Detroit Lions"],a:2,d:3},
+  {q:"Hur många NFL-lag finns det?",o:["28","30","32","34"],a:2,d:3},
+  {q:"Vilket år kom salary cap till NFL?",o:["1988","1990","1992","1994"],a:3,d:3},
+  {q:"Vad heter NFL-laget i Baltimore?",o:["Baltimore Eagles","Baltimore Ravens","Baltimore Steelers","Baltimore Colts"],a:1,d:3},
+  {q:"Vilket år bildades AFC och NFC divisionerna?",o:["1968","1970","1972","1974"],a:1,d:3},
+  {q:"Vem är NFL:s all-time leader i receiving yards?",o:["Jerry Rice","Randy Moss","Terrell Owens","Jerry Rice"],a:0,d:3},
+  {q:"Vilket NFL-lag har kommit till flest Super Bowls?",o:["Dallas Cowboys","New England Patriots","SF 49ers","Pittsburgh Steelers"],a:1,d:3},
+  {q:"Vad heter QB-positionen bakom center?",o:["Under center","Shotgun formation","Pistol formation","Wildcat"],a:0,d:3},
+],
+
+"🎵 80-tals musik": [
+  {q:"Vilket band sjöng 'Wake Me Up Before You Go-Go'?",o:["Duran Duran","Wham!","Culture Club","Spandau Ballet"],a:1,d:1},
+  {q:"Vem sjunger 'Girls Just Want to Have Fun'?",o:["Madonna","Pat Benatar","Cyndi Lauper","Blondie"],a:2,d:1},
+  {q:"Vilket band sjöng 'Take On Me'?",o:["a-ha","Roxette","Europe","Ace of Base"],a:0,d:1},
+  {q:"Vem sjunger 'Like a Virgin'?",o:["Cyndi Lauper","Pat Benatar","Madonna","Tina Turner"],a:2,d:1},
+  {q:"Vilket band sjöng 'Africa'?",o:["Foreigner","Toto","Journey","Boston"],a:1,d:1},
+  {q:"Vem sjunger 'Sweet Dreams Are Made of This'?",o:["Siouxsie","Eurythmics","Kate Bush","Yazoo"],a:1,d:1},
+  {q:"Vilket band sjöng 'Every Breath You Take'?",o:["The Police","U2","Dire Straits","Genesis"],a:0,d:1},
+  {q:"Vem sjunger 'Jump' (Van Halen 1984)?",o:["Van Halen","Bon Jovi","Aerosmith","Def Leppard"],a:0,d:1},
+  {q:"Vilket band sjöng 'Come On Eileen'?",o:["The Clash","Madness","Dexys Midnight Runners","The Specials"],a:2,d:1},
+  {q:"Vem sjunger 'Purple Rain'?",o:["Michael Jackson","Prince","David Bowie","Stevie Wonder"],a:1,d:1},
+  {q:"Vilket band sjöng 'Summer of 69'?",o:["Tom Petty","Bryan Adams","John Mellencamp","Bruce Springsteen"],a:1,d:1},
+  {q:"Vem sjunger 'Total Eclipse of the Heart'?",o:["Celine Dion","Bonnie Tyler","Kim Carnes","Stevie Nicks"],a:1,d:1},
+  {q:"Vilket band sjöng 'True Colors' (1986)?",o:["Wham!","Human League","Cyndi Lauper","Blondie"],a:2,d:2},
+  {q:"Vilket band sjöng 'Everybody Wants to Rule the World'?",o:["Simple Minds","Tears for Fears","OMD","The Alarm"],a:1,d:2},
+  {q:"Vilket band sjöng 'Don't You Forget About Me'?",o:["The Cure","Simple Minds","New Order","Depeche Mode"],a:1,d:2},
+  {q:"Vilket band sjöng 'Sweet Child O Mine'?",o:["Mötley Crüe","Def Leppard","Guns N Roses","Poison"],a:2,d:2},
+  {q:"Vem sjunger 'Careless Whisper'?",o:["Boy George","George Michael","Simon Le Bon","Howard Jones"],a:1,d:2},
+  {q:"Vilket band sjöng 'Rock Me Amadeus'?",o:["Nena","Falco","Modern Talking","Alphaville"],a:1,d:2},
+  {q:"Vem sjunger 'Walking on Sunshine'?",o:["Katrina and the Waves","Bananarama","Go-Gos","The Weather Girls"],a:0,d:2},
+  {q:"Vilket band sjöng 'Message in a Bottle'?",o:["Dire Straits","The Police","U2","REM"],a:1,d:2},
+  {q:"Vilket år kom New Orders debutalbum 'Movement'?",o:["1980","1981","1982","1983"],a:1,d:3},
+  {q:"Vilket band sjöng 'Just Like Heaven'?",o:["The Smiths","The Cure","The Psychedelic Furs","Echo and the Bunnymen"],a:1,d:3},
+  {q:"Vilket år kom Kraftwerks 'Computer World'?",o:["1979","1981","1983","1985"],a:1,d:3},
+  {q:"Vilket band sjöng 'Vienna' (Ultravox)?",o:["Human League","Ultravox","Japan","Visage"],a:1,d:3},
+],
+
+"🎶 90-tals musik": [
+  {q:"Vilket band sjöng 'Common People'?",o:["Blur","Pulp","Oasis","Elastica"],a:1,d:1},
+  {q:"Vem sjunger 'Torn' (Natalie Imbruglia)?",o:["Alanis Morissette","Natalie Imbruglia","Sheryl Crow","Shania Twain"],a:1,d:1},
+  {q:"Vem sjunger 'Fast Car' (Tracy Chapman)?",o:["Tracy Chapman","Bonnie Raitt","Joan Armatrading","Rickie Lee Jones"],a:0,d:1},
+  {q:"Vilket band sjöng 'Evenflow'?",o:["Soundgarden","Alice in Chains","Pearl Jam","Stone Temple Pilots"],a:2,d:1},
+  {q:"Vem sjunger 'Stay I Missed You'?",o:["Lisa Loeb","Juliana Hatfield","Liz Phair","Belly"],a:0,d:2},
+  {q:"Vilket år kom Nirvanas 'MTV Unplugged'?",o:["1993","1994","1995","1996"],a:1,d:2},
+  {q:"Vilket band sjöng 'Mr Jones' (Counting Crows)?",o:["Gin Blossoms","Counting Crows","Blues Traveler","Toad the Wet Sprocket"],a:1,d:2},
+  {q:"Vilket år kom Beck's 'Odelay'?",o:["1994","1996","1998","2000"],a:1,d:3},
+  {q:"Vilket band sjöng 'Daughter' (Pearl Jam)?",o:["Soundgarden","Alice in Chains","Pearl Jam","Stone Temple Pilots"],a:2,d:3},
+  {q:"Vilket år kom Björks 'Post'?",o:["1993","1995","1997","1999"],a:1,d:3},
+  {q:"Vilket år kom Massive Attack 'Blue Lines'?",o:["1989","1991","1993","1995"],a:1,d:3},
+  {q:"Vem sjunger 'Criminal' (Fiona Apple 1996)?",o:["Alanis Morissette","Fiona Apple","Liz Phair","PJ Harvey"],a:1,d:3},
+],
+
+"🎤 Ny musik (2010-idag)": [
+  {q:"Vem sjunger 'Midnight Rain'?",o:["Olivia Rodrigo","Taylor Swift","Billie Eilish","Sabrina Carpenter"],a:1,d:1},
+  {q:"Vilket år kom Harry Styles 'Harry's House'?",o:["2018","2020","2022","2024"],a:2,d:1},
+  {q:"Vem sjunger 'Unholy' (2022)?",o:["Sam Smith ft Kim Petras","Olly Alexander","Years & Years","Troye Sivan"],a:0,d:1},
+  {q:"Vilket år kom Olivia Rodrigos 'SOUR'?",o:["2019","2020","2021","2022"],a:2,d:1},
+  {q:"Vem sjunger 'Cruel Summer'?",o:["Katy Perry","Taylor Swift","Dua Lipa","Ariana Grande"],a:1,d:1},
+  {q:"Vem sjunger 'Lose You to Love Me'?",o:["Ariana Grande","Demi Lovato","Selena Gomez","Miley Cyrus"],a:2,d:1},
+  {q:"Vilket år kom Weeknds 'Beauty Behind the Madness'?",o:["2013","2015","2017","2019"],a:1,d:2},
+  {q:"Vilket år kom Taylor Swifts 'Reputation'?",o:["2015","2016","2017","2018"],a:2,d:2},
+  {q:"Vilket år kom Lana Del Reys 'Born to Die'?",o:["2010","2012","2014","2016"],a:1,d:2},
+  {q:"Vilket år kom Post Malones 'Hollywood's Bleeding'?",o:["2017","2019","2021","2023"],a:1,d:2},
+  {q:"Vem sjunger 'Good Days' (SZA 2021)?",o:["H.E.R.","SZA","Summer Walker","Jhene Aiko"],a:1,d:3},
+  {q:"Vilket år kom Clairos 'Immunity'?",o:["2017","2019","2021","2023"],a:1,d:3},
+],
+
+"🎬 Movie Quiz": [
+  {q:"Vem spelar Bruce Wayne i Nolans Batman?",o:["Ben Affleck","Michael Keaton","Christian Bale","Val Kilmer"],a:2,d:1},
+  {q:"Vilket år kom Jordan Peeles 'Get Out'?",o:["2015","2017","2019","2021"],a:1,d:1},
+  {q:"Vem regisserade 'La La Land'?",o:["J.J. Abrams","Damien Chazelle","Baz Luhrmann","Wes Anderson"],a:1,d:1},
+  {q:"Vilket år kom 'Mad Max: Fury Road'?",o:["2013","2015","2017","2019"],a:1,d:1},
+  {q:"Vem spelar i 'Mad Max: Fury Road'?",o:["Tom Hardy och Charlize Theron","Chris Evans och Scarlett Johansson","Ryan Gosling och Emma Stone","Jake Gyllenhaal och Amy Adams"],a:0,d:1},
+  {q:"Vilket år kom 'Nolans Memento'?",o:["1998","2000","2002","2004"],a:1,d:2},
+  {q:"Vem regisserade 'Arrival' (2016)?",o:["Christopher Nolan","Denis Villeneuve","Ridley Scott","David Fincher"],a:1,d:2},
+  {q:"Vem spelar huvudrollen i 'Dune' (2021)?",o:["Tom Holland","Timothée Chalamet","Ansel Elgort","Lucas Hedges"],a:1,d:2},
+  {q:"Vilket år kom 'Everything Everywhere All at Once'?",o:["2020","2022","2023","2024"],a:1,d:2},
+  {q:"Vilket år kom Paul Thomas Andersons 'There Will Be Blood'?",o:["2005","2007","2009","2011"],a:1,d:3},
+  {q:"Vilket år kom Terrence Malicks 'The Tree of Life'?",o:["2007","2009","2011","2013"],a:2,d:3},
+  {q:"Vilket år kom 'The Lighthouse' (Robert Eggers)?",o:["2017","2019","2021","2023"],a:1,d:3},
+],
+
+"📺 TV-serier": [
+  {q:"Vilket år kom Prestige-serien 'Deadwood' (HBO)?",o:["2002","2004","2006","2008"],a:1,d:2},
+  {q:"Vem skapade och spelar i 'Fleabag'?",o:["Sharon Horgan","Phoebe Waller-Bridge","Lena Dunham","Mindy Kaling"],a:1,d:1},
+  {q:"Vilket år kom 'Chernobyl' (HBO miniseries)?",o:["2017","2019","2021","2023"],a:1,d:1},
+  {q:"Vilket år kom 'The Boys' (Amazon Prime)?",o:["2017","2019","2021","2023"],a:1,d:1},
+  {q:"Vilket år kom 'Shogun' (FX 2024)?",o:["2022","2023","2024","2025"],a:2,d:2},
+  {q:"Vem spelar Lord Toranaga i 'Shogun' (2024)?",o:["Hiroyuki Sanada","Ken Watanabe","Tadanobu Asano","Masahiro Motoki"],a:0,d:3},
+  {q:"Vilket år kom 'Dark' (tysk Netflix-serie)?",o:["2015","2017","2019","2021"],a:1,d:2},
+  {q:"Vem spelar den manlige huvudrollen i 'Normal People'?",o:["Paul Mescal","Andrew Scott","Barry Keoghan","Domhnall Gleeson"],a:0,d:2},
+  {q:"Vilket år kom 'Station Eleven' (HBO)?",o:["2019","2021","2022","2023"],a:1,d:2},
+  {q:"Vilket år kom 'Atlanta' (Donald Glover)?",o:["2014","2016","2018","2020"],a:1,d:3},
+  {q:"Vem skapade 'Succession'?",o:["David Chase","Jesse Armstrong","Vince Gilligan","Alan Ball"],a:1,d:3},
+  {q:"Vilket år kom 'The Knick' (Steven Soderbergh)?",o:["2012","2014","2016","2018"],a:1,d:3},
+],
+
+"🌌 Astronomi & Rymden": [
+  {q:"Vilket är solsystemets störst planet?",o:["Saturn","Uranus","Jupiter","Neptunus"],a:2,d:1},
+  {q:"Vad heter vår galax?",o:["Andromeda","Vintergatan","Triangeln","Magellanska molnet"],a:1,d:1},
+  {q:"Hur många månader har Mars?",o:["0","1","2","3"],a:2,d:1},
+  {q:"Vad är ett svart hål?",o:["En kollapsad stjärna med extrem gravitation","En nebulosa","En kvasar","En pulsar"],a:0,d:1},
+  {q:"Vilket år togs det första fotot av ett svart hål?",o:["2015","2017","2019","2021"],a:2,d:2},
+  {q:"Vad heter det svarta hålet i centrum av Vintergatan?",o:["Sagittarius A*","Cygnus X-1","TON 618","M87*"],a:0,d:2},
+  {q:"Hur lång tid tar det för ljuset från Proxima Centauri?",o:["1 år","2.5 år","4.2 år","10 år"],a:2,d:2},
+  {q:"Vilket år landade Curiosity på Mars?",o:["2008","2010","2012","2014"],a:2,d:2},
+  {q:"Vad heter Jupiters störst måne?",o:["Europa","Ganymedes","Callisto","Io"],a:1,d:3},
+  {q:"Vad är en pulsar?",o:["En roterande neutronsstjärna","En kollapsad vit dvärg","En quasar","En röd jätte"],a:0,d:3},
+  {q:"Hur lång tid tar det för Neptunus att kretsa runt solen?",o:["84 år","100 år","165 år","248 år"],a:2,d:3},
+  {q:"Vilket år kom Perseverance-rovern till Mars?",o:["2019","2021","2022","2023"],a:1,d:2},
+],
+
+"🍹 Alkohol & Drinkar": [
+  {q:"Vad är huvudingrediensen i en Margarita?",o:["Vodka","Rum","Tequila","Gin"],a:2,d:1},
+  {q:"Vilket land kommer Scotch Whisky ifrån?",o:["Irland","Skottland","USA","Japan"],a:1,d:1},
+  {q:"Vad är en Mojito gjord på?",o:["Vodka och lime","Rum, mynta, lime och socker","Gin och tonic","Tequila och citron"],a:1,d:1},
+  {q:"Vad heter klassisk spriten i Negroni?",o:["Campari gin och vermut","Vodka triple sec och lime","Tequila triple sec och lime","Bourbon angostura och socker"],a:0,d:1},
+  {q:"Vilket land kommer Vodka ursprungligen ifrån?",o:["Polen eller Ryssland","Sverige","Finland","Ukraina"],a:0,d:1},
+  {q:"Vad är en Aperol Spritz gjord på?",o:["Aperol Campari och soda","Aperol prosecco och soda","Aperol gin och tonic","Aperol vodka och lime"],a:1,d:1},
+  {q:"Vilket land kommer Bourbon ifrån?",o:["Skottland","Irland","Kanada","USA"],a:3,d:1},
+  {q:"Vad är en Old Fashioned gjord på?",o:["Vodka angostura och socker","Bourbon eller rye angostura och socker","Rum angostura och socker","Gin angostura och socker"],a:1,d:2},
+  {q:"Vilket land uppfann pilsnern?",o:["Bayern","Österrike","Böhmen Tjeckien","Belgien"],a:2,d:2},
+  {q:"Vad heter den irländska guinness-stilen?",o:["Pale Ale","Stout","Lager","Porter"],a:1,d:1},
+  {q:"Vad är Cointreau?",o:["En rom","En apelsinlikör","En vodka","En gin"],a:1,d:2},
+  {q:"Vilket land producerar mest öl i världen?",o:["Tyskland","USA","Kina","Tjeckien"],a:2,d:2},
+  {q:"Vad heter cocktailen med vodka lime och ginger beer?",o:["Paloma","Moscow Mule","Dark and Stormy","Gin Mule"],a:1,d:2},
+  {q:"Vilket land uppfann ölet (historiskt)?",o:["England","Mesopotamien","Egypten","Kina"],a:1,d:3},
+  {q:"Vilket år grundades Guinness?",o:["1749","1759","1769","1779"],a:1,d:3},
+  {q:"Vad är Amaretto gjort på?",o:["Mandlar","Apelsinskal","Körsbär","Aprikos"],a:0,d:2},
+  {q:"Vilket land producerar mest vin i världen?",o:["Frankrike","Spanien","Italien","USA"],a:2,d:2},
+  {q:"Vad är en Espresso Martini gjord på?",o:["Vodka kaffelikör och espresso","Gin kaffelikör och espresso","Rum kaffelikör och espresso","Bourbon kaffelikör och espresso"],a:0,d:2},
+  {q:"Vilket land producerar mest whisky i världen?",o:["Skottland","Irland","USA","Japan"],a:2,d:2},
+  {q:"Vad är Campari?",o:["En italiensk bitter likör","En fransk vin-aperitif","En spansk sherry","En belgisk öl"],a:0,d:2},
+  {q:"Vilket år kom Baileys Irish Cream?",o:["1967","1972","1977","1982"],a:1,d:3},
+  {q:"Vad heter den klassiska New Orleans-cocktailen med rye och angostura?",o:["Hurricane","Sazerac","Ramos Gin Fizz","Vieux Carré"],a:1,d:3},
+  {q:"Vilket land producerar Rioja-vin?",o:["Frankrike","Italien","Spanien","Portugal"],a:2,d:1},
+  {q:"Vad heter den kuba-klassiska med rom och cola?",o:["Mojito","Daiquiri","Cuba Libre","Dark and Stormy"],a:2,d:1},
+];
+
+// Wait – JS doesn't allow semicolon after array in object, fix:
+const QUESTION_DB10_FIXED = QUESTION_DB10;};
+
+(function() {
+  if (typeof QUESTION_DB === "undefined") return;
+  const existing = new Set();
+  Object.values(QUESTION_DB).forEach(qs => qs.forEach(q => existing.add(q.q.toLowerCase().trim())));
+  let added = 0;
+  Object.keys(QUESTION_DB10).forEach(cat => {
+    const newQs = QUESTION_DB10[cat].filter(q => !existing.has(q.q.toLowerCase().trim()));
+    newQs.forEach(q => existing.add(q.q.toLowerCase().trim()));
+    if(QUESTION_DB[cat]){ QUESTION_DB[cat]=QUESTION_DB[cat].concat(newQs); }
+    else { QUESTION_DB[cat]=newQs; }
+    added += newQs.length;
+  });
+  console.log("questions10.js: "+added+" unique questions added");
+})();
