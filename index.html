@@ -647,7 +647,8 @@ const PRESETS=[
 let myName='',myTeam='',isAdmin=false,isTeamMode=false;
 let myAnswers={},qCount=20,difficulty=1,timerIv=null,timerLeft=TIMER_SECS;
 let unsubscribe=null,lastPhase=null,lastQIdx=-1;
-let hasJoined=false; // track if we've gone past join screen
+let hasJoined=false;
+let lastQuizId=null; // detect new quiz across sessions
 
 function whenReady(fn){if(window._dbReady)fn();else window._firebaseLoaded=fn}
 function dbRef(p){return window._ref(window._db,p)}
@@ -940,8 +941,15 @@ function setPill(phase,state){
 
 function handleLobby(state){
   if(hasJoined){
+    // Reset ALL per-quiz state when returning to lobby
+    if(lastPhase !== null && lastPhase !== 'lobby') {
+      myAnswers = {};
+      lastQIdx = -1;
+      clearTimer();
+    }
+    lastPhase = 'lobby';
     showScreen('lobby');
-    renderLobbyControls(); // Always re-render so admin panel shows correctly
+    renderLobbyControls();
   }
   renderEntries(state.entries);
   document.getElementById('wait-admin').style.display=isAdmin?'':'none';
@@ -958,6 +966,15 @@ function handleQuestion(state){
   // Set timer FIRST before renderQuestion reads it
   window._timerSecs = (state.timerSecs != null ? Number(state.timerSecs) : 15);
   const qIdx=state.currentQ||0;
+
+  // Detect new quiz via quizId OR qIdx reset
+  const currentQuizId = state.quizId || 0;
+  if(currentQuizId !== lastQuizId || (qIdx === 0 && lastQIdx > 0)) {
+    myAnswers = {};
+    lastPhase = null; // force re-render
+    lastQuizId = currentQuizId;
+  }
+
   if(lastPhase!=='question'||lastQIdx!==qIdx){
     lastPhase='question';
     lastQIdx=qIdx;
@@ -1064,6 +1081,11 @@ function renderQuestion(state,idx){
   const q=(state.questions||[])[idx];if(!q)return;
   const total=(state.questions||[]).length;
   window._currentTotal=total;
+  // Always reset result alert and team-locked when rendering new question
+  const ra=document.getElementById('result-alert');
+  if(ra){ra.style.display='none';ra.className='result-alert';}
+  const tl=document.getElementById('team-locked');
+  if(tl) tl.style.display='none';
   const pts=pointsForQ(idx,total);
   document.getElementById('q-num').textContent=`Fråga ${idx+1} / ${total}`;
   document.getElementById('q-pts').textContent=`⭐ ${pts} p`;
@@ -1248,14 +1270,17 @@ async function adminGenerate(){
   const entries = await dbGet(GAME_KEY+'/entries');
   if(entries){
     for(const key of Object.keys(entries)){
-      if(entries[key]) await dbSet(GAME_KEY+'/entries/'+key+'/score', 0);
+      const e=entries[key];
+      if(e) await dbSet(GAME_KEY+'/entries/'+key+'/score', 0);
     }
   }
 
   // Mark these questions as used so they don't repeat soon
   markQuestionsUsed(questions);
 
-  await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null});
+  // quizId ensures all clients detect this as a brand new quiz
+  const quizId = Date.now();
+  await dbUpd(GAME_KEY,{phase:'question',questions,currentQ:0,answers:null,quizId});
   showToast('🎯 Quiz startar med '+questions.length+' frågor!','ok',2500);
 }
 window.adminGenerate=adminGenerate;
