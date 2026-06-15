@@ -7,7 +7,6 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Konsultrollen i praktiken – GRC</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f0;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
@@ -238,9 +237,7 @@ const TERMS={
 };
 function showTerm(k){
   const x=TERMS[k]; if(!x)return;
-  document.getElementById('termTitle').textContent=x.t;
-  document.getElementById('termDesc').textContent=x.d;
-  show('ov-term');
+  alert(x.t+'\n\n'+x.d);
 }
 
 function clearAnswer(key, inputId){
@@ -407,9 +404,8 @@ function login(){
 function showQR(){
   const url=window.location.href.split('?')[0];
   document.getElementById('qru').textContent=url;
-  const el=document.getElementById('qrc'); el.innerHTML='';
-  try{ new QRCode(el,{text:url,width:150,height:150,colorDark:'#0F6E56',colorLight:'#ffffff'}); }
-  catch(e){ el.textContent=url; }
+  const el=document.getElementById('qrc');
+  el.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}" width="150" height="150" alt="QR-kod" style="display:block">`;
   show('ov-qr');
 }
 function showTimeEd(){
@@ -435,7 +431,7 @@ function setMode(m){
   document.getElementById('b-fac').textContent=AUTH?'✓ Facilitator':'🔒 Facilitator';
   // Show/hide timer controls via body class
   document.body.classList.toggle('grp-mode', m==='grp');
-  document.body.classList.toggle('fac-mode', AUTH);
+  document.body.classList.toggle('fac-mode', m==='fac');
   render();
 }
 
@@ -558,7 +554,7 @@ const DEFS={
   3:{t:'Del 3 · Värdeskapande på obelagd tid',ti:'Diskussion 12 min → Redovisning 8 min',
     qs:[
       {h:'Diskutera 1',p:'Vad gör ni faktiskt med obelagd tid? Vad borde man göra – och vad hindrar er?'},
-      {h:'Diskutera 2',p:'"Jag är för feg för att tidrapportera det som är bestämt" – känner ni igen det? Vad kostar det?'},
+      {h:'Diskutera 2',p:'Har ni någon gång tvekat att tidrapportera det som är bestämt? Känner ni igen det – och vad kostar det?'},
       {h:'Diskutera 3',p:'Hur kan man skapa värde för Combitech och kunder utan att vara på aktivt uppdrag?'},
     ],
     del:'<strong>1 konkret sak</strong> ni kan göra nästa gång ni har obelagd tid.',
@@ -714,8 +710,9 @@ function exportA(){
 }
 
 // ── INIT ──
-if(AUTH){ document.body.classList.add('fac-mode'); MODE='fac'; }
+if(AUTH){ MODE='fac'; }
 document.body.classList.toggle('grp-mode', MODE==='grp');
+document.body.classList.toggle('fac-mode', MODE==='fac');
 ['b-fac','b-grp','b-sum'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',['fac','grp','sum'][i]===MODE));
 document.getElementById('b-fac').textContent=AUTH?'✓ Facilitator':'🔒 Facilitator';
 updTimer();
